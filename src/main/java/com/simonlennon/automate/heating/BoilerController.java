@@ -18,7 +18,7 @@ public class BoilerController {
 	protected Timeline radsTimeline;
 	protected Timeline tankTimeline;
 
-	protected Timer t;
+	protected Timer eventTimer;
 
 	protected Boiler boiler;
 	protected Rads rads;
@@ -32,19 +32,19 @@ public class BoilerController {
 		boiler = new Boiler();
 		rads = new Rads();
 	}
-	
-	public void nightlyRollover(){
-		
-		//cancel all timer events 
-		
-		//get the timeline again
-		
-		//add any boosts to the timeline if we have them
-		
-		//schedule the events
-		
-		//check the status of everything
-		
+
+	public void nightlyRollover() {
+
+		// cancel all timer events
+
+		// get the timeline again
+
+		// add any boosts to the timeline if we have them
+
+		// schedule the events
+
+		// check the status of everything
+
 	}
 
 	public void cancelBoost() {
@@ -86,11 +86,7 @@ public class BoilerController {
 		tankTimeline.addActivation(boost);
 		tankBoost = boost;
 
-		t.cancel();
-		t = new Timer();
-
-		scheduleEvents(radsTimeline);
-		scheduleEvents(tankTimeline);
+		scheduleEvents();
 
 		checkAndSetDeviceStates();
 
@@ -107,11 +103,8 @@ public class BoilerController {
 		radsTimeline = tls.getTodaysTimeline("RADS");
 		tankTimeline = tls.getTodaysTimeline("TANK");
 
-		t = new Timer();
-
 		// Schedule events based on the timelines
-		scheduleEvents(radsTimeline);
-		scheduleEvents(tankTimeline);
+		scheduleEvents();
 
 		started = true;
 
@@ -124,7 +117,8 @@ public class BoilerController {
 		System.out.println("handleTimelineEvent->"
 				+ eventTask.getTimeline().getName() + ":"
 				+ eventTask.getActivation().getStartTime() + ":"
-				+ eventTask.getActivation().getEndTime());
+				+ eventTask.getActivation().getEndTime()
+				+ eventTask.getClass().getName());
 
 		if (eventTask.getActivation() instanceof BoostActivation
 				&& eventTask.getTimeline().getName().equals(TimelineStore.RADS)) {
@@ -254,6 +248,18 @@ public class BoilerController {
 		return tankBoost != null;
 	}
 
+	protected void scheduleEvents(){
+		
+		if (eventTimer != null) {
+			eventTimer.cancel();
+		}
+
+		eventTimer = new Timer();
+		
+		scheduleEvents(radsTimeline);
+		scheduleEvents(tankTimeline);
+	}
+	
 	protected void scheduleEvents(Timeline tl) {
 
 		Activation[] activations = tl.getActivations();
@@ -263,12 +269,12 @@ public class BoilerController {
 
 			if (a.getStartTime().after(now)) {
 				StartEventTask start = new StartEventTask(tl, a);
-				t.schedule(start, a.getStartTime());
+				eventTimer.schedule(start, a.getStartTime());
 			}
 
 			if (a.getEndTime().after(now)) {
 				EndEventTask end = new EndEventTask(tl, a);
-				t.schedule(end, a.getEndTime());
+				eventTimer.schedule(end, a.getEndTime());
 			}
 
 		}
@@ -318,10 +324,10 @@ public class BoilerController {
 		boiler.turnOff();
 		rads.turnOff();
 
-		if (t != null) {
-			t.cancel();
+		if (eventTimer != null) {
+			eventTimer.cancel();
 		}
-		t = null;
+		eventTimer = null;
 		radBoost = null;
 		tankBoost = null;
 		started = false;
