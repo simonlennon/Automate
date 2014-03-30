@@ -11,5 +11,5 @@ public interface Timeline {
 
     void addActivation(Activation a);
 
-
+    void removeActivation(Activation a);
 }
