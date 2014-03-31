@@ -1,8 +1,9 @@
 package com.simonlennon.automate.heating;
 
-import java.util.ArrayList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by simon.lennon on 20/01/14.
@@ -14,6 +15,7 @@ public class Boiler {
     protected Date lastOn;
     protected Date lastOff;
 
+    private static Logger  logger = LogManager.getLogger(Boiler.class);
 
     public Boiler() {
 
@@ -21,13 +23,13 @@ public class Boiler {
 
 
     public void turnOn() {
-        System.out.println("Boiler turning on");
+        logger.info("Boiler turning on");
         lastOn = new Date();
         on = true;
     }
 
     public void turnOff() {
-        System.out.println("Boiler turning off");
+        logger.info("Boiler turning off");
         lastOff = new Date();
         on = false;
     }
