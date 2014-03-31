@@ -10,7 +10,6 @@ import java.util.Date;
  */
 public class Boiler {
 
-
     protected boolean on;
     protected Date lastOn;
     protected Date lastOff;
@@ -20,7 +19,6 @@ public class Boiler {
     public Boiler() {
 
     }
-
 
     public void turnOn() {
         logger.info("Boiler turning on");
@@ -34,10 +32,8 @@ public class Boiler {
         on = false;
     }
 
-
     public boolean isOn() {
         return on;
     }
-
 
 }

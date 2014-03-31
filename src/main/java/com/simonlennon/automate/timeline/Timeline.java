@@ -5,6 +5,8 @@ package com.simonlennon.automate.timeline;
  */
 public interface Timeline {
 
+    static final int DAY = 1;
+
     String getName();
 
     Activation[] getActivations();
@@ -12,4 +14,5 @@ public interface Timeline {
     void addActivation(Activation a);
 
     void removeActivation(Activation a);
+
 }

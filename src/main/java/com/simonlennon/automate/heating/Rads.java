@@ -1,5 +1,8 @@
 package com.simonlennon.automate.heating;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Date;
 
 /**
@@ -11,18 +14,20 @@ public class Rads {
     protected Date lastOn;
     protected Date lastOff;
 
+    private static Logger logger = LogManager.getLogger(Boiler.class);
+
     public Rads(){
 
     }
 
     public void turnOn() {
-        System.out.println("Rads turning on");
+        logger.info("Rads turning on");
         lastOn = new Date();
         on = true;
     }
 
     public void turnOff() {
-        System.out.println("Rads turning off");
+        logger.info("Rads turning off");
         lastOff = new Date();
         on = false;
     }
