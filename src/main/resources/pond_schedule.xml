@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schedules>
+    <schedule name="Summer">
+        <day>
+            <period start="8:00" end="22:00"></period>
+        </day>
+    </schedule>
+</schedules>

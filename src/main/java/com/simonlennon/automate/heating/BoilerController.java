@@ -4,354 +4,269 @@ import com.simonlennon.automate.timeline.Activation;
 import com.simonlennon.automate.timeline.BoostActivation;
 import com.simonlennon.automate.timeline.Timeline;
 import com.simonlennon.automate.timeline.TimelineStore;
+import com.simonlennon.automate.timeline.events.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by simon.lennon on 20/01/14.
  */
-public class BoilerController {
+public class BoilerController implements TimelineEventHandler {
 
-	protected Timeline radsTimeline;
-	protected Timeline tankTimeline;
+    protected Timeline radsTimeline;
+    protected Timeline tankTimeline;
 
-	protected Timer eventTimer;
+    protected Timer eventTimer;
 
-	protected Boiler boiler;
-	protected Rads rads;
+    protected Boiler boiler;
+    protected Rads rads;
 
-	protected boolean started;
+    protected boolean started;
 
-	protected BoostActivation radBoost;
-	protected BoostActivation tankBoost;
+    protected BoostActivation radBoost;
+    protected BoostActivation tankBoost;
 
-	public BoilerController() {
-		boiler = new Boiler();
-		rads = new Rads();
-	}
+    private static Logger logger = LogManager.getLogger(Boiler.class);
 
-	public void nightlyRollover() {
+    public BoilerController() {
+        boiler = new Boiler();
+        rads = new Rads();
+    }
 
-		// cancel all timer events
 
-		// get the timeline again
+    public void cancelBoost() {
 
-		// add any boosts to the timeline if we have them
+        if (radBoost != null) {
+            radsTimeline.removeActivation(radBoost);
+            radBoost = null;
+        }
 
-		// schedule the events
+        if (tankBoost != null) {
+            tankTimeline.removeActivation(tankBoost);
+            tankBoost = null;
+        }
 
-		// check the status of everything
+        checkAndSetDeviceStates();
+    }
 
-	}
+    public class BoostAlreadyActiveException extends Exception {
+        BoostAlreadyActiveException(String msg) {
+            super(msg);
+        }
+    }
 
-	public void cancelBoost() {
+    public void boost(int minutes, boolean fireRads)
+            throws BoostAlreadyActiveException {
 
-		if (radBoost != null) {
-			radsTimeline.removeActivation(radBoost);
-			radBoost = null;
-		}
+        if (radBoost != null || tankBoost != null) {
+            throw new BoostAlreadyActiveException(
+                    "Boost is already active, cancel existing boost first.");
+        }
 
-		if (tankBoost != null) {
-			tankTimeline.removeActivation(tankBoost);
-			tankBoost = null;
-		}
+        if (fireRads) {
+            BoostActivation boost = new BoostActivation(minutes);
+            radsTimeline.addActivation(boost);
+            radBoost = boost;
+        }
 
-		checkAndSetDeviceStates();
-	}
+        BoostActivation boost = new BoostActivation(minutes);
+        tankTimeline.addActivation(boost);
+        tankBoost = boost;
 
-	public class BoostAlreadyActiveException extends Exception {
-		BoostAlreadyActiveException(String msg) {
-			super(msg);
-		}
-	}
+        scheduleEvents();
 
-	public void boost(int minutes, boolean fireRads)
-			throws BoostAlreadyActiveException {
+        checkAndSetDeviceStates();
 
-		if (radBoost != null || tankBoost != null) {
-			throw new BoostAlreadyActiveException(
-					"Boost is already active, cancel existing boost first.");
-		}
+    }
 
-		if (fireRads) {
-			BoostActivation boost = new BoostActivation(minutes);
-			radsTimeline.addActivation(boost);
-			radBoost = boost;
-		}
+    public void restart() {
+        shutdown();
+        startup();
+    }
 
-		BoostActivation boost = new BoostActivation(minutes);
-		tankTimeline.addActivation(boost);
-		tankBoost = boost;
+    public void startup() {
 
-		scheduleEvents();
+        TimelineStore tls = new TimelineStore();
+        radsTimeline = tls.getTodaysTimeline("RADS");
+        tankTimeline = tls.getTodaysTimeline("TANK");
 
-		checkAndSetDeviceStates();
+        // Schedule events based on the timelines
+        scheduleEvents();
 
-	}
+        started = true;
 
-	public void restart() {
-		shutdown();
-		startup();
-	}
+        checkAndSetDeviceStates();
 
-	public void startup() {
+    }
 
-		TimelineStore tls = new TimelineStore();
-		radsTimeline = tls.getTodaysTimeline("RADS");
-		tankTimeline = tls.getTodaysTimeline("TANK");
+    public synchronized void handleTimelineEvent(EventTask eventTask) {
 
-		// Schedule events based on the timelines
-		scheduleEvents();
+        logger.info("handleTimelineEvent->"
+                + eventTask.getTimeline().getName() + ":"
+                + eventTask.getActivation().getStartTime() + ":"
+                + eventTask.getActivation().getEndTime()
+                + eventTask.getClass().getName());
 
-		started = true;
+        if (eventTask.getActivation() instanceof BoostActivation
+                && eventTask.getTimeline().getName().equals(TimelineStore.RADS)) {
+            if (radBoost != null)
+                radBoost = null;
+        }
+        if (eventTask.getActivation() instanceof BoostActivation
+                && eventTask.getTimeline().getName().equals(TimelineStore.TANK)) {
+            if (tankBoost != null)
+                tankBoost = null;
+        }
 
-		checkAndSetDeviceStates();
+        checkAndSetDeviceStates();
 
-	}
+    }
 
-	protected synchronized void handleTimelineEvent(EventTask eventTask) {
+    protected void checkAndSetDeviceStates() {
 
-		System.out.println("handleTimelineEvent->"
-				+ eventTask.getTimeline().getName() + ":"
-				+ eventTask.getActivation().getStartTime() + ":"
-				+ eventTask.getActivation().getEndTime()
-				+ eventTask.getClass().getName());
+        Date now = new Date();
+        if (shouldRadsBeActive(now) || shouldTankBeActive(now)) {
+            if (!boiler.isOn())
+                turnBoilerOn();
+        } else {
+            if (boiler.isOn())
+                turnBoilerOff();
+        }
 
-		if (eventTask.getActivation() instanceof BoostActivation
-				&& eventTask.getTimeline().getName().equals(TimelineStore.RADS)) {
-			if (radBoost != null)
-				radBoost = null;
-		}
-		if (eventTask.getActivation() instanceof BoostActivation
-				&& eventTask.getTimeline().getName().equals(TimelineStore.TANK)) {
-			if (tankBoost != null)
-				tankBoost = null;
-		}
+        if (shouldRadsBeActive(now)) {
+            if (!rads.isOn())
+                turnRadsOn();
+        } else {
+            if (rads.isOn())
+                turnRadsOff();
+        }
 
-		checkAndSetDeviceStates();
+    }
 
-	}
+    protected void turnBoilerOff() {
+        boiler.turnOff();
+    }
 
-	protected void checkAndSetDeviceStates() {
+    protected void turnBoilerOn() {
+        boiler.turnOn();
+    }
 
-		Date now = new Date();
-		if (shouldRadsBeActive(now) || shouldTankBeActive(now)) {
-			if (!boiler.isOn())
-				turnBoilerOn();
-		} else {
-			if (boiler.isOn())
-				turnBoilerOff();
-		}
+    protected void turnRadsOn() {
+        rads.turnOn();
+    }
 
-		if (shouldRadsBeActive(now)) {
-			if (!rads.isOn())
-				turnRadsOn();
-		} else {
-			if (rads.isOn())
-				turnRadsOff();
-		}
+    protected void turnRadsOff() {
+        rads.turnOff();
+    }
 
-	}
+    protected boolean shouldRadsBeActive(Date now) {
 
-	protected void turnBoilerOff() {
-		// if (boiler.isOn()) {
-		boiler.turnOff();
-		// }
-	}
+        Activation[] activations = radsTimeline.getActivations();
+        return findActivation(activations, now) != null;
 
-	protected void turnBoilerOn() {
-		// if (!boiler.isOn()) {
-		boiler.turnOn();
-		// }
-	}
+    }
 
-	protected void turnRadsOn() {
-		// if (!rads.isOn()) {
-		rads.turnOn();
-		// }
-	}
+    protected boolean shouldTankBeActive(Date now) {
 
-	protected void turnRadsOff() {
-		// if (rads.isOn()) {
-		rads.turnOff();
-		// }
-	}
+        Activation[] activations = tankTimeline.getActivations();
+        return findActivation(activations, now) != null;
 
-	protected boolean shouldRadsBeActive(Date now) {
+    }
 
-		Activation[] activations = radsTimeline.getActivations();
-		return findActivation(activations, now) != null;
+    public ArrayList<Activation> getCurrentActivations() {
 
-	}
+        ArrayList<Activation> currentActivations = new ArrayList<Activation>();
 
-	protected boolean shouldTankBeActive(Date now) {
+        Date now = new Date();
 
-		Activation[] activations = tankTimeline.getActivations();
-		return findActivation(activations, now) != null;
+        ArrayList<Activation> currentTankActivations = findActivation(
+                tankTimeline.getActivations(), now);
 
-	}
+        if (currentTankActivations != null)
+            currentActivations.addAll(currentTankActivations);
 
-	public ArrayList<Activation> getCurrentActivations() {
-		ArrayList<Activation> currentActivations = new ArrayList<Activation>();
+        ArrayList<Activation> currentRadsActivations = findActivation(
+                radsTimeline.getActivations(), now);
 
-		Date now = new Date();
+        if (currentRadsActivations != null)
+            currentActivations.addAll(currentRadsActivations);
 
-		ArrayList<Activation> currentTankActivations = findActivation(
-				tankTimeline.getActivations(), now);
+        return currentActivations;
 
-		if (currentTankActivations != null)
-			currentActivations.addAll(currentTankActivations);
+    }
 
-		ArrayList<Activation> currentRadsActivations = findActivation(
-				radsTimeline.getActivations(), now);
+    protected ArrayList<Activation> findActivation(Activation[] activations,
+                                                   Date time) {
 
-		if (currentRadsActivations != null)
-			currentActivations.addAll(currentRadsActivations);
+        ArrayList<Activation> activationsForTime = new ArrayList<Activation>();
 
-		return currentActivations;
+        for (Activation a : activations) {
 
-	}
+            boolean start = time.after(a.getStartTime())
+                    || time.equals(a.getStartTime());
+            boolean end = time.after(a.getEndTime())
+                    || time.equals(a.getEndTime());
 
-	protected ArrayList<Activation> findActivation(Activation[] activations,
-			Date time) {
+            if (start && !end) {
+                activationsForTime.add(a);
+            }
+        }
 
-		ArrayList<Activation> activationsForTime = new ArrayList<Activation>();
+        if (activationsForTime.size() > 0) {
+            return activationsForTime;
+        } else {
+            return null;
+        }
 
-		for (Activation a : activations) {
+    }
 
-			boolean start = time.after(a.getStartTime())
-					|| time.equals(a.getStartTime());
-			boolean end = time.after(a.getEndTime())
-					|| time.equals(a.getEndTime());
+    public boolean isBoostingRads() {
+        return radBoost != null;
+    }
 
-			if (start && !end) {
-				activationsForTime.add(a);
-			}
-		}
+    public boolean isBoostingTank() {
+        return tankBoost != null;
+    }
 
-		if (activationsForTime.size() > 0) {
-			return activationsForTime;
-		} else {
-			return null;
-		}
+    protected void scheduleEvents() {
 
-	}
+        if (eventTimer != null) {
+            eventTimer.cancel();
+        }
 
-	public boolean isBoostingRads() {
-		return radBoost != null;
-	}
+        eventTimer = new Timer();
 
-	public boolean isBoostingTank() {
-		return tankBoost != null;
-	}
+        EventHelper.scheduleEvents(radsTimeline, eventTimer, this);
+        EventHelper.scheduleEvents(tankTimeline, eventTimer, this);
 
-	protected void scheduleEvents(){
-		
-		if (eventTimer != null) {
-			eventTimer.cancel();
-		}
+    }
 
-		eventTimer = new Timer();
-		
-		scheduleEvents(radsTimeline);
-		scheduleEvents(tankTimeline);
-	}
-	
-	protected void scheduleEvents(Timeline tl) {
 
-		Activation[] activations = tl.getActivations();
-		Date now = new Date();
+    public void shutdown() {
 
-		for (Activation a : activations) {
+        boiler.turnOff();
+        rads.turnOff();
 
-			if (a.getStartTime().after(now)) {
-				StartEventTask start = new StartEventTask(tl, a);
-				eventTimer.schedule(start, a.getStartTime());
-			}
+        if (eventTimer != null) {
+            eventTimer.cancel();
+        }
+        eventTimer = null;
+        radBoost = null;
+        tankBoost = null;
+        started = false;
 
-			if (a.getEndTime().after(now)) {
-				EndEventTask end = new EndEventTask(tl, a);
-				eventTimer.schedule(end, a.getEndTime());
-			}
+    }
 
-		}
+    public Boiler getBoiler() {
+        return boiler;
+    }
 
-	}
-
-	class EventTask extends TimerTask {
-
-		protected Timeline timeline;
-		protected Activation activation;
-
-		public EventTask(Timeline timeline, Activation activation) {
-			this.timeline = timeline;
-			this.activation = activation;
-		}
-
-		@Override
-		public void run() {
-
-			BoilerController.this.handleTimelineEvent(this);
-
-		}
-
-		public Timeline getTimeline() {
-			return timeline;
-		}
-
-		public Activation getActivation() {
-			return activation;
-		}
-	}
-
-	class StartEventTask extends EventTask {
-		StartEventTask(Timeline timeline, Activation activation) {
-			super(timeline, activation);
-		}
-	}
-
-	class EndEventTask extends EventTask {
-		EndEventTask(Timeline timeline, Activation activation) {
-			super(timeline, activation);
-		}
-	}
-
-	public void shutdown() {
-
-		boiler.turnOff();
-		rads.turnOff();
-
-		if (eventTimer != null) {
-			eventTimer.cancel();
-		}
-		eventTimer = null;
-		radBoost = null;
-		tankBoost = null;
-		started = false;
-
-	}
-
-	public static void main(String[] args) {
-		BoilerController controller = new BoilerController();
-		controller.startup();
-		while (true) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public Boiler getBoiler() {
-		return boiler;
-	}
-
-	public Rads getRads() {
-		return rads;
-	}
+    public Rads getRads() {
+        return rads;
+    }
 
 }

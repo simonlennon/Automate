@@ -25,6 +25,9 @@
         <module name="Automation" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Automation" target="1.6" />
+    </bytecodeTargetLevel>
   </component>
 </project>
 

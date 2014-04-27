@@ -16,42 +16,8 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script>
-
-    function setup(){
-        loadStatusInfo();
-        setInterval(loadStatusInfo, 5000);
-
-    }
-
-
-    function loadStatusInfo() {
-
-        // get inputs
-        var status = new Object();
-
-        $.ajax({
-            url: "status",
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json',
-            mimeType: 'application/json',
-
-            success: function (data) {
-
-             $('#boiler-status').text(data.boilerStatus);
-             $('#rads-status').text(data.radsStatus);
-
-            },
-            error:function(data,status,er) {
-                alert("error: "+data+" status: "+status+" er:"+er);
-            }
-        });
-    }
-    </script>
-
   </head>
-  <body onLoad="setup()">
+  <body>
 
     <ul class="nav nav-pills">
       <li class="active"><a href="#">Home</a></li>
@@ -59,9 +25,6 @@
       <li><a href="#">Pond</a></li>
        <li><a href="#">A/C</a></li>
     </ul>
-
-
-
 
     <div class="label label-success">Hello</div>
     <br/>
