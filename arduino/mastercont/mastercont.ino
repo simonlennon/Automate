@@ -59,21 +59,19 @@ void setup()
 void loop()
 {
 
-  //Wait for traffic on either the wireless or serial ports.
   recieveLoop();
-
 }
+
+
 
 void recieveLoop()
 {
   packet_s packet;
-
-  // Put into receive mode
-  nRF905_receive();
-
+  
   // Wait for data
   while(1)
-  {
+  {  
+
     if(getPacket(&packet) && packet.type == PACKET_TYPE_DATA) // Got a packet and is it a data packet?
     {
       // Print data
@@ -87,25 +85,23 @@ void recieveLoop()
       // Put into receive mode
       nRF905_receive();
     }
-    else if(Serial.available())
+    else 
+
+    if(Serial.available())
     {
+      
       // We've got some serial data, need to handle that
       readSearialCommand();
+      
     }
+
   }
 }
 
 
-
-
-
-/**
- * @TODO this should really timeout if the term character is not received quickly
- */
-
-String readSearialCommand()
+void readSearialCommand()
 {
-
+  
   while (Serial.available() > 0)
   {
 
@@ -132,7 +128,9 @@ String readSearialCommand()
       serialDataStream = ""; // Clear recieved buffer
     }
     else {
+      debug("Appending");
       serialDataStream += recieved; 
+      debug(serialDataStream);
     }
 
   } 
@@ -140,28 +138,25 @@ String readSearialCommand()
 }
 
 /**
- *
+ * Devices: 0=the adruino board itself, 1=the pond pump, 2=first relay, 3=second relay, 4=the DHT
  */
 void handlePondCommand(){
 
   debug("Pond control command received.");
 
-  String msgParts[3];
-  split(':',serialDataStream, msgParts);
+//  String msgParts[3];
+//  split(':',serialDataStream, msgParts);
 
-  String deviceId = msgParts[1];
-  String statusSwitch = msgParts[2];
+//  String deviceId = msgParts[1];
+//  String statusSwitch = msgParts[2];
 
-  if(deviceId == "1" && statusSwitch == "1")
-  {
-    turnOnPondPump();
-  } 
-  else if(deviceId == "1" && statusSwitch == "0"){
-    turnOffPondPump();  
-  } else {
-    //Unknown command
-    debug("Unknown command to pond controller");
-  }
+  debug("\n\rSending command to pond\n\r");
+
+  packet_s packet;
+  packet.type = PACKET_TYPE_DATA;  
+  packet.len = serialDataStream.length();
+  serialDataStream.getBytes(packet.data, MAX_PACKET_SIZE);
+  sendPacket(&packet);
 
 }
 
@@ -193,14 +188,6 @@ void split(char delim, String str, String *str_array, int limit) {
 
 void debug(String s){
   Serial.println(s);
-}
-
-void turnOnPondPump(){
-  debug("\n\rTurning on pond pump\n\r");
-}
-
-void turnOffPondPump(){
-  debug("\n\rTurning off pond pump\n\r");
 }
 
 // Send a packet
@@ -258,6 +245,7 @@ static bool getPacket(void* _packet)
 
   return true;
 }
+
 
 
 
