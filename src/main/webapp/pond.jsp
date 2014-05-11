@@ -122,7 +122,7 @@
         <h3 class="panel-title">Pump Status</h3>
       </div>
       <div class="panel-body">
-        Boiler is <span data-bind="text: pumpStatus">-</span>
+        Pond pump is <span data-bind="text: pumpStatus">-</span>
       </div>
     </div>
 
@@ -138,10 +138,10 @@
        </div>
 
        <div class="panel-body">
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="visible: onPermitted">
+            <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="enabled: onPermitted">
               <span class="glyphicon glyphicon-fire"></span> Pump On
             </button>
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="visible: offPermitted">
+            <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="enabled: offPermitted">
               <span class="glyphicon glyphicon-remove"></span> Pump Off
             </button>
         </div>

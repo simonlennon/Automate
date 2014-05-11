@@ -1,5 +1,8 @@
 package com.simonlennon.automate.pond;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import jssc.SerialPortException;
 
 import com.simonlennon.automate.serialcomms.MastercontSerialInterface;
@@ -15,15 +18,7 @@ public class PondController {
 
 	protected boolean on;
 
-	public void turnOnPump() {
-		try {
-			msi.writeCmd("1:0:0:" + getNextTransID() + ":1;");
-			on = true;
-		} catch (SerialPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	private static Logger logger = LogManager.getLogger(PondController.class);
 
 	protected int getNextTransID() {
 
@@ -35,13 +30,33 @@ public class PondController {
 
 	}
 
+	public void turnOnPump() {
+		try {
+			if (logger.isDebugEnabled())
+				logger.debug("turnOnPump() writing command to serial");
+			msi.writeCmd("1:0:0:" + getNextTransID() + ":1;");
+			on = true;
+			if (logger.isDebugEnabled())
+				logger.debug("turnOnPump() command written");
+		} catch (SerialPortException e) {
+			if (logger.isDebugEnabled())
+				logger.debug("turnOnPump() serial error", e);
+			logger.error("Serial error turning on pond pump. Turn on debug for stack trace.");
+		}
+	}
+
 	public void turnOffPump() {
 		try {
+			if (logger.isDebugEnabled())
+				logger.debug("turnOffPond() writing command to serial");
 			msi.writeCmd("1:0:0:" + getNextTransID() + ":2;");
 			on = false;
+			if (logger.isDebugEnabled())
+				logger.debug("turnOffPond() command written");
 		} catch (SerialPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (logger.isDebugEnabled())
+				logger.debug("turnOffPond() serial error", e);
+			logger.error("Serial error turning off pond pump. Turn on debug for stack trace.");
 		}
 	}
 

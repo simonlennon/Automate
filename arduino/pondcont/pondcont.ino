@@ -7,6 +7,9 @@
 
 void setup()
 {
+  
+  pinMode(4, OUTPUT);
+  
   // Start up
   nRF905_init();
 
@@ -37,12 +40,12 @@ void checkWireless()
   // Wait for data
   while(!nRF905_getData(buffer, sizeof(buffer)));
 
-  readCommand(buffer);
+  processCommand(buffer);
 
 }
 
 
-void readCommand(unsigned char *str)
+void processCommand(unsigned char *str)
 {
 
   String commandStringIn;
@@ -76,31 +79,38 @@ void processCommand(String commandStringIn){
     Serial.println("Got ping command, responding");
     String pingResponse = sourceDevice+":1:1:"+txId+":0";
     Serial.println(pingResponse);  
-    
+
     delay(100);
     sendWirelessMsg(pingResponse);
 
+  } 
+  else if (cmd == "1"){
+    digitalWrite(4, HIGH);
   }
+  else if (cmd == "2"){
+    digitalWrite(4, LOW);
+  }
+
 
 }
 
 void sendWirelessMsg(String msg){
 
   char tx_buf[BUF_LEN]= {
-  0};
-        msg.toCharArray(tx_buf,BUF_LEN);
-  
-        byte addr[] = MASTERADDR;
-	nRF905_setTXAddress(addr);
+    0    };
+  msg.toCharArray(tx_buf,BUF_LEN);
 
-	// Set payload data (reply with data received)
-	nRF905_setData(tx_buf, sizeof(tx_buf));
-	
-	// Send payload (send fails if other transmissions are going on, keep trying until success)
-	while(!nRF905_send());
+  byte addr[] = MASTERADDR;
+  nRF905_setTXAddress(addr);
 
-	// Put back into receive mode
-	nRF905_receive();
+  // Set payload data (reply with data received)
+  nRF905_setData(tx_buf, sizeof(tx_buf));
+
+  // Send payload (send fails if other transmissions are going on, keep trying until success)
+  while(!nRF905_send());
+
+  // Put back into receive mode
+  nRF905_receive();
 
 }
 
@@ -130,6 +140,8 @@ void split(char delim, String str, String *str_array, int limit) {
   str_array[i] = str;
   return;
 }
+
+
 
 
 

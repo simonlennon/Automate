@@ -5,6 +5,9 @@ import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Created by simon.lennon on 11/05/14.
  * 
@@ -13,10 +16,11 @@ import jssc.SerialPortException;
  */
 public class MastercontSerialInterface implements SerialPortEventListener {
 
+	private static Logger logger = LogManager
+			.getLogger(MastercontSerialInterface.class);
 
-	
-	SerialPort serialPort;
-	String portName;
+	protected SerialPort serialPort;
+	protected String portName;
 	protected String inboundCmd;
 
 	public void init(String portName) throws SerialPortException {
@@ -57,7 +61,10 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 					}
 
 					if (";".equals(b)) {
-						System.out.println(inboundCmd);
+						if (logger.isDebugEnabled()) {
+							logger.debug("serialEvent() inbound msg: "
+									+ inboundCmd);
+						}
 						inboundCmd = "";
 					}
 				}
@@ -68,15 +75,15 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
 		} else if (event.isCTS()) {// If CTS line has changed state
 			if (event.getEventValue() == 1) {// If line is ON
-				System.out.println("CTS - ON");
+				logger.debug("serialEvent() CTS - ON");
 			} else {
-				System.out.println("CTS - OFF");
+				logger.debug("serialEvent() CTS - OFF");
 			}
 		} else if (event.isDSR()) {// /If DSR line has changed state
 			if (event.getEventValue() == 1) {// If line is ON
-				System.out.println("DSR - ON");
+				logger.debug("serialEvent() DSR - ON");
 			} else {
-				System.out.println("DSR - OFF");
+				logger.debug("serialEvent() DSR - OFF");
 			}
 		}
 
