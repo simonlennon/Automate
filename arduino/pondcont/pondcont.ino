@@ -16,12 +16,18 @@ void setup()
   // Set address of this device
   byte addr[] = PONDADDR;
   nRF905_setRXAddress(addr);
+  digitalWrite(4, HIGH);
 
   // Put into receive mode
   nRF905_receive();
 
   Serial.begin(9600);
-  Serial.println(F("Pondcont started"));
+  
+ 
+  Serial.println(F("Pondcont started;"));
+  
+  sendWirelessMsg("0:1:1:0:10");
+  
 }
 
 void loop()
@@ -79,16 +85,19 @@ void processCommand(String commandStringIn){
     Serial.println("Got ping command, responding");
     String pingResponse = sourceDevice+":1:1:"+txId+":0";
     Serial.println(pingResponse);  
-
     delay(100);
     sendWirelessMsg(pingResponse);
 
   } 
   else if (cmd == "1"){
+    Serial.println("pulling high");
     digitalWrite(4, HIGH);
+    sendWirelessMsg(sourceDevice+":1:1:"+txId+":1");
   }
   else if (cmd == "2"){
+    Serial.println("pulling low");
     digitalWrite(4, LOW);
+    sendWirelessMsg(sourceDevice+":1:1:"+txId+":2");
   }
 
 

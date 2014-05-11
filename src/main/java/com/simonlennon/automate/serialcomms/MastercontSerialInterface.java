@@ -61,9 +61,10 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 					}
 
 					if (";".equals(b)) {
-
-						logger.debug("serialEvent() inbound msg: " + inboundCmd);
-
+						if (logger.isDebugEnabled()) {
+							logger.debug("serialEvent() inbound msg: "
+									+ inboundCmd);
+						}
 						inboundCmd = "";
 					}
 				}
