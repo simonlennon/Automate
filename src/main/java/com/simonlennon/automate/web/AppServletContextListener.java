@@ -1,6 +1,9 @@
 package com.simonlennon.automate.web;
 
 import com.simonlennon.automate.heating.BoilerController;
+import com.simonlennon.automate.pond.PondController;
+import com.simonlennon.automate.serialcomms.MastercontSerialInterface;
+import jssc.SerialPortException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -11,6 +14,7 @@ import javax.servlet.ServletContextListener;
 public class AppServletContextListener implements ServletContextListener {
 
     BoilerController bc;
+    PondController pc;
 
     @Override
     public void contextDestroyed(ServletContextEvent evt) {
@@ -22,6 +26,17 @@ public class AppServletContextListener implements ServletContextListener {
         bc = new BoilerController();
         bc.startup();
         evt.getServletContext().setAttribute("bcv",new BoilerControllerView(bc));
+
+        pc = new PondController();
+        MastercontSerialInterface msi = new MastercontSerialInterface();
+        try {
+            msi.init(System.getProperty("MCPORT"));
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+        }
+
+        pc.setMastercontSerialInterface(msi);
+        evt.getServletContext().setAttribute("pc",pc);
     }
 
 

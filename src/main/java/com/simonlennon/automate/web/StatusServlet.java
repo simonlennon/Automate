@@ -2,6 +2,7 @@ package com.simonlennon.automate.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simonlennon.automate.heating.BoilerController;
+import com.simonlennon.automate.pond.PondController;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ public class StatusServlet extends HttpServlet {
 
         //We will always return the current status
         BoilerControllerView bcv = (BoilerControllerView) getServletContext().getAttribute("bcv");
+        PondController pc = (PondController) getServletContext().getAttribute("pc");
 
         if ("boost".equals(jsonData.get("opp"))) {
             boost(bcv, jsonData);
@@ -33,18 +35,19 @@ public class StatusServlet extends HttpServlet {
             response.setContentType("application/json");
             mapper.writeValue(response.getOutputStream(), status);
         } else if ("loadPumpStatus".equals(jsonData.get("opp"))) {
+            PondStatus ps = new PondStatus(pc.isOn()?"on":"off");
             response.setContentType("application/json");
             mapper.writeValue(response.getOutputStream(), ps);
         } else if ("pondPumpOn".equals(jsonData.get("opp"))) {
-            ps.pumpStatus = "on";
+            pc.turnOnPump();
         } else if ("pondPumpOff".equals(jsonData.get("opp"))) {
-            ps.pumpStatus = "off";
+            pc.turnOffPump();
         }
 
 
     }
 
-    PondStatus ps = new PondStatus("off");
+
 
 
     public void boost(BoilerControllerView bcv, Map<String, Object> jsonData) {
