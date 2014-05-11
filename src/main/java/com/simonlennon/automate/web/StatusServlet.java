@@ -26,17 +26,25 @@ public class StatusServlet extends HttpServlet {
 
         if ("boost".equals(jsonData.get("opp"))) {
             boost(bcv, jsonData);
-        }
-
-        if ("cancelBoost".equals(jsonData.get("opp"))) {
+        } else if ("cancelBoost".equals(jsonData.get("opp"))) {
             bcv.getBoiler().cancelBoost();
+        } else if ("loadStatus".equals(jsonData.get("opp"))) {
+            Status status = new Status(bcv.getRadsActive() ? "on" : "off", bcv.getBoilerActive() ? "on" : "off", bcv.getBoiler().isBoostingTank() ? "on" : "off", bcv.getBoiler().isBoostingRads() ? "on" : "off");
+            response.setContentType("application/json");
+            mapper.writeValue(response.getOutputStream(), status);
+        } else if ("loadPumpStatus".equals(jsonData.get("opp"))) {
+            response.setContentType("application/json");
+            mapper.writeValue(response.getOutputStream(), ps);
+        } else if ("pondPumpOn".equals(jsonData.get("opp"))) {
+            ps.pumpStatus = "on";
+        } else if ("pondPumpOff".equals(jsonData.get("opp"))) {
+            ps.pumpStatus = "off";
         }
 
-        Status status = new Status(bcv.getRadsActive() ? "on" : "off", bcv.getBoilerActive() ? "on" : "off", bcv.getBoiler().isBoostingTank() ? "on" : "off", bcv.getBoiler().isBoostingRads() ? "on" : "off");
-        response.setContentType("application/json");
-        mapper.writeValue(response.getOutputStream(), status);
 
     }
+
+    PondStatus ps = new PondStatus("off");
 
 
     public void boost(BoilerControllerView bcv, Map<String, Object> jsonData) {
@@ -52,14 +60,28 @@ public class StatusServlet extends HttpServlet {
 
     }
 
+    class PondStatus {
+
+        PondStatus(String pumpStatus) {
+            this.pumpStatus = pumpStatus;
+        }
+
+        public String getPumpStatus() {
+            return pumpStatus;
+        }
+
+        public void setPumpStatus(String pumpStatus) {
+            this.pumpStatus = pumpStatus;
+        }
+
+        String pumpStatus;
+    }
 
     class Status {
 
         String radsStatus;
         String boilerStatus;
         String tankBoostStatus;
-
-
         String radsBoostStatus;
 
         Status(String radsStatus, String boilerStatus, String tankBoostStatus, String radsBoostStatus) {
