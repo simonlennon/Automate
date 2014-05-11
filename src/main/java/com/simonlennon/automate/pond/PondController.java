@@ -1,5 +1,7 @@
 package com.simonlennon.automate.pond;
 
+import jssc.SerialPortException;
+
 import com.simonlennon.automate.serialcomms.MastercontSerialInterface;
 
 /**
@@ -7,24 +9,48 @@ import com.simonlennon.automate.serialcomms.MastercontSerialInterface;
  */
 public class PondController {
 
-    public MastercontSerialInterface msi;
+	protected int transCounter;
 
-    protected boolean on;
+	public MastercontSerialInterface msi;
 
-    public void turnOnPump(){
-        on = true;
-    }
+	protected boolean on;
 
-    public void turnOffPump(){
-        on = false;
-    }
+	public void turnOnPump() {
+		try {
+			msi.writeCmd("1:0:0:" + getNextTransID() + ":1;");
+			on = true;
+		} catch (SerialPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-    public boolean isOn(){
-        return on;
-    }
+	protected int getNextTransID() {
 
-    public void setMastercontSerialInterface(MastercontSerialInterface msi) {
-        this.msi = msi;
-    }
+		if (transCounter == 1000) {
+			transCounter = 0;
+		}
+
+		return transCounter++;
+
+	}
+
+	public void turnOffPump() {
+		try {
+			msi.writeCmd("1:0:0:" + getNextTransID() + ":2;");
+			on = true;
+		} catch (SerialPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isOn() {
+		return on;
+	}
+
+	public void setMastercontSerialInterface(MastercontSerialInterface msi) {
+		this.msi = msi;
+	}
 
 }

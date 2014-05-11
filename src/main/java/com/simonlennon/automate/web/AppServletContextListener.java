@@ -30,7 +30,8 @@ public class AppServletContextListener implements ServletContextListener {
         pc = new PondController();
         MastercontSerialInterface msi = new MastercontSerialInterface();
         try {
-            msi.init(System.getProperty("MCPORT"));
+          //  msi.init(System.getProperty("MCPORT"));
+        	 msi.init("COM4");
         } catch (SerialPortException e) {
             e.printStackTrace();
         }
