@@ -121,7 +121,7 @@
     <ul class="nav nav-pills">
       <li><a href="index.jsp">Home</a></li>
       <li class="active"><a href="#">Heating</a></li>
-      <li><a href="#">Pond</a></li>
+      <li><a href="pond.jsp">Pond</a></li>
        <li><a href="#">A/C</a></li>
     </ul>
 
