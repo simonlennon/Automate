@@ -21,9 +21,7 @@ public class AppServletContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent evt) {
         bc = new BoilerController();
         bc.startup();
-
         evt.getServletContext().setAttribute("bcv",new BoilerControllerView(bc));
-
     }
 
 
