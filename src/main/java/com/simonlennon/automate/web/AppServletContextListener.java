@@ -31,7 +31,7 @@ public class AppServletContextListener implements ServletContextListener {
         MastercontSerialInterface msi = new MastercontSerialInterface();
         try {
           //  msi.init(System.getProperty("MCPORT"));
-        	 msi.init("COM4");
+        	 msi.init("/dev/ttyACM0");
         } catch (SerialPortException e) {
             e.printStackTrace();
         }
