@@ -38,7 +38,7 @@ public class PondController {
 	public void turnOffPump() {
 		try {
 			msi.writeCmd("1:0:0:" + getNextTransID() + ":2;");
-			on = true;
+			on = false;
 		} catch (SerialPortException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
