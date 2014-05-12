@@ -26,7 +26,7 @@ void setup()
  
   Serial.println(F("Pondcont started;"));
   
-  sendWirelessMsg("0:1:1:0:10");
+  sendWirelessMsg("0:1:1:0:10;");
   
 }
 
@@ -92,12 +92,12 @@ void processCommand(String commandStringIn){
   else if (cmd == "1"){
     Serial.println("pulling high");
     digitalWrite(4, HIGH);
-    sendWirelessMsg(sourceDevice+":1:1:"+txId+":1");
+    sendWirelessMsg(sourceDevice+":1:1:"+txId+":1;");
   }
   else if (cmd == "2"){
     Serial.println("pulling low");
     digitalWrite(4, LOW);
-    sendWirelessMsg(sourceDevice+":1:1:"+txId+":2");
+    sendWirelessMsg(sourceDevice+":1:1:"+txId+":2;");
   }
 
 
