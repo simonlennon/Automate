@@ -159,7 +159,7 @@ void split(char delim, String str, String *str_array, int limit) {
 }
 
 void debug(String s){
-  Serial.println("DEBUG:"+s+";");
+  Serial.print("DEBUG:"+s+";");
 }
 
 

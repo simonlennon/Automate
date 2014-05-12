@@ -94,7 +94,6 @@ public class PondController implements CommandProcessor {
             msi.writeCmd(c);
             logger.debug("requestStatus() command written");
         } catch (SerialPortException e) {
-
             logger.debug("requestStatus() serial error", e);
             logger.error("Serial error requesting status. Turn on debug for stack trace.");
         }
@@ -111,7 +110,6 @@ public class PondController implements CommandProcessor {
 
     public void handleCommand(Command cmd){
         logger.debug("handleCommand(): "+cmd.toString());
-
     }
 
 

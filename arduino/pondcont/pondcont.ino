@@ -25,7 +25,8 @@ void setup()
  
   Serial.println(F("Pondcont started;"));
   
-  sendWirelessMsg("0:1:1:0:10;");
+  //Request the controller to reset our state.
+  sendWirelessMsg("0:1:1:0:6;");
   
 }
 
