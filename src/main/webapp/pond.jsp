@@ -138,10 +138,10 @@
        </div>
 
        <div class="panel-body">
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="enabled: onPermitted">
+            <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="visible: onPermitted">
               <span class="glyphicon glyphicon-fire"></span> Pump On
             </button>
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="enabled: offPermitted">
+            <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="visible: offPermitted">
               <span class="glyphicon glyphicon-remove"></span> Pump Off
             </button>
         </div>

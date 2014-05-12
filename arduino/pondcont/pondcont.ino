@@ -1,4 +1,3 @@
-
 #include <nRF905.h>
 #include <SPI.h>
 #include <AM.h>
@@ -90,13 +89,13 @@ void processCommand(String commandStringIn){
 
   } 
   else if (cmd == "1"){
-    Serial.println("pulling high");
-    digitalWrite(4, HIGH);
+    Serial.println("pulling low");
+    digitalWrite(4, LOW);
     sendWirelessMsg(sourceDevice+":1:1:"+txId+":1;");
   }
   else if (cmd == "2"){
-    Serial.println("pulling low");
-    digitalWrite(4, LOW);
+    Serial.println("pulling high");
+    digitalWrite(4, HIGH);
     sendWirelessMsg(sourceDevice+":1:1:"+txId+":2;");
   }
 

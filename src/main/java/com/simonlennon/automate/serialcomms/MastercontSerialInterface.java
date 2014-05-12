@@ -30,11 +30,15 @@ public class MastercontSerialInterface implements SerialPortEventListener {
         serialPort.openPort();
         serialPort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8,
                 SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+        serialPort.addEventListener(this);
 
     }
 
     public void writeCmd(Command cmd) throws SerialPortException {
-        if (serialPort == null) {
+        
+    	logger.debug("writeCmd()"+cmd.toString());
+    	
+    	if (serialPort == null) {
             init(portName);
         }
 
