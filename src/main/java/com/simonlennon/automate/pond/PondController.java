@@ -110,7 +110,7 @@ public class PondController implements CommandProcessor {
     }
 
     public void handleCommand(Command cmd){
-
+        logger.debug("handleCommand(): "+cmd.toString());
 
     }
 
