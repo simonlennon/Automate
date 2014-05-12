@@ -35,7 +35,7 @@ public class StatusServlet extends HttpServlet {
             response.setContentType("application/json");
             mapper.writeValue(response.getOutputStream(), status);
         } else if ("loadPumpStatus".equals(jsonData.get("opp"))) {
-            PondStatus ps = new PondStatus(pc.isOn()?"on":"off");
+            PondStatus ps = new PondStatus(pc.isPumpOn()?"on":"off");
             response.setContentType("application/json");
             mapper.writeValue(response.getOutputStream(), ps);
         } else if ("pondPumpOn".equals(jsonData.get("opp"))) {
