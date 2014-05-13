@@ -7,4 +7,8 @@ public interface TimelineEventHandler {
 
     void handleTimelineEvent(EventTask eventTask);
 
+    void timelineExpired(ExpiryEvent event);
+
+
+
 }

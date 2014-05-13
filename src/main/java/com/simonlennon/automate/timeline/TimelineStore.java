@@ -20,35 +20,42 @@ public class TimelineStore {
 
     public static final String TANK = "TANK";
 
-    public static final String FOUNTAIN = "FOUNTAIN";
+    public static final String POND = "POND";
 
     public OneDayTimeline getTodaysTimeline(String name) {
 
-        if ("TANK".equalsIgnoreCase(name)) {
+        if (TANK.equalsIgnoreCase(name)) {
             return getTankTimeline();
-        } else if ("RADS".equalsIgnoreCase(name)) {
+        } else if (RADS.equalsIgnoreCase(name)) {
             return getRadsTimeline();
-        } else if ("FOUNTAIN".equalsIgnoreCase(name)) {
+        } else if (POND.equalsIgnoreCase(name)) {
             return getFountainTimeline("summer");
         }
         return null;
     }
 
     private OneDayTimeline getFountainTimeline(String name) {
-
-        Document doc = null;
-        try {
-            doc = readXMLScheduleFile("pond_schedule.xml");
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return getPondTimeline();
     }
+
+    protected OneDayTimeline getPondTimeline() {
+
+        Calendar cal = Calendar.getInstance();
+
+        cal.add(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 0);
+
+        Date start = cal.getTime();
+        cal.add(Calendar.MINUTE, 1);
+        Date end = cal.getTime();
+
+        ScheduledActivation sa1 = new ScheduledActivation(start, end);
+        OneDayTimeline timeline = new OneDayTimeline(POND,getExpiry());
+        timeline.addActivation(sa1);
+        return timeline;
+
+    }
+
 
     protected Document readXMLScheduleFile(String file) throws ParserConfigurationException, IOException, SAXException {
         File fXmlFile = new File(file);
@@ -70,10 +77,22 @@ public class TimelineStore {
         Date end = cal.getTime();
 
         ScheduledActivation sa1 = new ScheduledActivation(start, end);
-        OneDayTimeline timeline = new OneDayTimeline(TANK);
+        OneDayTimeline timeline = new OneDayTimeline(TANK,getExpiry());
         timeline.addActivation(sa1);
         return timeline;
 
+    }
+
+    protected Date getExpiry(){
+        Calendar expiry = Calendar.getInstance();
+        expiry.setTime(new Date());
+        expiry.set(Calendar.DAY_OF_YEAR, expiry.get(Calendar.DAY_OF_YEAR)+1);
+        expiry.set(Calendar.HOUR_OF_DAY, 0);
+        expiry.set(Calendar.MINUTE, 0);
+        expiry.set(Calendar.SECOND, 0);
+        expiry.set(Calendar.MILLISECOND, 0);
+        Date midnightTonight = expiry.getTime();
+        return midnightTonight;
     }
 
     protected OneDayTimeline getRadsTimeline() {
@@ -88,7 +107,7 @@ public class TimelineStore {
         Date end = cal.getTime();
 
         ScheduledActivation sa1 = new ScheduledActivation(start, end);
-        OneDayTimeline timeline = new OneDayTimeline(RADS);
+        OneDayTimeline timeline = new OneDayTimeline(RADS,getExpiry());
         timeline.addActivation(sa1);
         return timeline;
 

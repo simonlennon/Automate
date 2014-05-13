@@ -1,10 +1,10 @@
 package com.simonlennon.automate.heating;
 
-import com.simonlennon.automate.timeline.Activation;
-import com.simonlennon.automate.timeline.BoostActivation;
-import com.simonlennon.automate.timeline.Timeline;
-import com.simonlennon.automate.timeline.TimelineStore;
-import com.simonlennon.automate.timeline.events.*;
+import com.simonlennon.automate.timeline.*;
+import com.simonlennon.automate.timeline.events.EventHelper;
+import com.simonlennon.automate.timeline.events.EventTask;
+import com.simonlennon.automate.timeline.events.ExpiryEvent;
+import com.simonlennon.automate.timeline.events.TimelineEventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,6 +81,11 @@ public class BoilerController implements TimelineEventHandler {
 
         checkAndSetDeviceStates();
 
+    }
+
+    @Override
+    public void timelineExpired(ExpiryEvent event) {
+        restart();
     }
 
     public void restart() {
@@ -166,14 +171,14 @@ public class BoilerController implements TimelineEventHandler {
     protected boolean shouldRadsBeActive(Date now) {
 
         Activation[] activations = radsTimeline.getActivations();
-        return findActivation(activations, now) != null;
+        return ActivationHelper.findActivation(activations, now) != null;
 
     }
 
     protected boolean shouldTankBeActive(Date now) {
 
         Activation[] activations = tankTimeline.getActivations();
-        return findActivation(activations, now) != null;
+        return ActivationHelper.findActivation(activations, now) != null;
 
     }
 
@@ -183,13 +188,13 @@ public class BoilerController implements TimelineEventHandler {
 
         Date now = new Date();
 
-        ArrayList<Activation> currentTankActivations = findActivation(
+        ArrayList<Activation> currentTankActivations = ActivationHelper.findActivation(
                 tankTimeline.getActivations(), now);
 
         if (currentTankActivations != null)
             currentActivations.addAll(currentTankActivations);
 
-        ArrayList<Activation> currentRadsActivations = findActivation(
+        ArrayList<Activation> currentRadsActivations = ActivationHelper.findActivation(
                 radsTimeline.getActivations(), now);
 
         if (currentRadsActivations != null)
@@ -199,30 +204,7 @@ public class BoilerController implements TimelineEventHandler {
 
     }
 
-    protected ArrayList<Activation> findActivation(Activation[] activations,
-                                                   Date time) {
 
-        ArrayList<Activation> activationsForTime = new ArrayList<Activation>();
-
-        for (Activation a : activations) {
-
-            boolean start = time.after(a.getStartTime())
-                    || time.equals(a.getStartTime());
-            boolean end = time.after(a.getEndTime())
-                    || time.equals(a.getEndTime());
-
-            if (start && !end) {
-                activationsForTime.add(a);
-            }
-        }
-
-        if (activationsForTime.size() > 0) {
-            return activationsForTime;
-        } else {
-            return null;
-        }
-
-    }
 
     public boolean isBoostingRads() {
         return radBoost != null;
