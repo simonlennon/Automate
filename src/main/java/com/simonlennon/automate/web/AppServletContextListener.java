@@ -38,10 +38,12 @@ public class AppServletContextListener implements ServletContextListener {
         }
 
         pc.setMastercontSerialInterface(msi);
+
+        pc.startup();
         evt.getServletContext().setAttribute("pc",pc);
     }
     
-   // @TODO stop the serial port on close
+   // @TODO stop the serial port on close, also the controllers should be stopped
 
 
 }
