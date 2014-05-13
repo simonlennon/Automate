@@ -38,13 +38,11 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
 		logger.debug("writeCmd()" + cmd.toString());
 
-        /**
 		if (serialPort == null) {
 			init(portName);
 		}
 
 		serialPort.writeBytes(cmd.toString().getBytes());// Write data to port
-         */
 
 	}
 

@@ -21,7 +21,7 @@ import java.util.Timer;
  */
 public class PondController implements CommandProcessor, TimelineEventHandler {
 
-    protected int transCounter = 1;
+    protected int transCounter = 0;
 
     public static final int POND_ON_CMD = 1;
     public static final int POND_OFF_CMD = 2;
