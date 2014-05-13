@@ -4,14 +4,18 @@
 
 #define BUF_LEN          32
 
+AM am;
+
 String serialDataStream;
 
 void setup()
 {
 
+  
   // Start up
   nRF905_init();
-
+  
+  
   // Set address of this device
   byte addr[] = MASTERADDR;
   nRF905_setRXAddress(addr);
@@ -67,7 +71,7 @@ void readSearialCommand()
       debug("Arduino Received->"+serialDataStream);
 
       String msgParts[10];
-      split(':',serialDataStream, msgParts);
+      am.split(':',serialDataStream, msgParts);
 
       String targetDevice = msgParts[0];
       String sourceDevice = msgParts[1];
@@ -113,12 +117,18 @@ void processCommand(unsigned char *str)
 }
 
 void sendWirelessMsg(String msg){
-
+  
   char tx_buf[BUF_LEN]= {
-    0          };
+    0    };
   msg.toCharArray(tx_buf,BUF_LEN);
 
-  byte addr[] = PONDADDR;
+  String firstByte[1];
+  am.split(':',msg, firstByte,1);
+  
+  byte b = firstByte[0].toInt();
+  
+  byte addr[] = {b,b,b,b};
+  
   nRF905_setTXAddress(addr);
 
   // Set payload data (reply with data received)
@@ -132,37 +142,9 @@ void sendWirelessMsg(String msg){
 
 }
 
-void split(char delim, String str, String *str_array) {
-  // this method takes a string, chops it up at the point of delim and drops each piece
-  // into str_array.
-  split(delim, str, str_array, 0);
-}
-
-
-void split(char delim, String str, String *str_array, int limit) {
-  // this method takes a string, chops it up at the point of delim and drops each piece
-  // into str_array.
-  int i = 0;
-  while (str.indexOf(delim) >= 0) {
-    str_array[i] = str.substring(0, str.indexOf(delim));
-    str = str.substring(str.indexOf(delim)+1);
-    i++;
-    // this should set the limit now.
-    if (limit != 0 && i >= limit) {
-      break;
-    }
-
-  }
-  // dump in the last part.
-  str_array[i] = str;
-  return;
-}
-
 void debug(String s){
   Serial.print("DEBUG:"+s+";");
 }
-
-
 
 
 
