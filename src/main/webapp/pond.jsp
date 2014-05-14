@@ -34,8 +34,6 @@
         setInterval(loadStatusInfo, 5000);
     });
 
-
-
     function loadStatusInfo() {
 
         var status = new Object();
@@ -47,20 +45,26 @@
             data: JSON.stringify(dataUp),
 
             success: function (data) {
-            viewModel.pumpStatus(data.pumpStatus);
-
-                if(data.pumpStatus=="on"){
-                    viewModel.offPermitted(true);
-                    viewModel.onPermitted(false);
-                } else {
-                    viewModel.offPermitted(false);
-                    viewModel.onPermitted(true);
-                }
+                updateStatusInfo(data);
             },
             error:function(data,status,er) {
                 alert("error: "+data+" status: "+status+" er:"+er);
             }
         });
+    }
+
+    function updateStatusInfo(data){
+
+                    viewModel.pumpStatus(data.pumpStatus);
+
+                    if(data.pumpStatus=="on"){
+                        viewModel.offPermitted(true);
+                        viewModel.onPermitted(false);
+                    } else {
+                        viewModel.offPermitted(false);
+                        viewModel.onPermitted(true);
+                    }
+
     }
 
     function pumpOn(){
@@ -73,14 +77,12 @@
           data: JSON.stringify(dataUp),
 
           success: function (data) {
-                window.status="Pump on request sent...";
+                updateStatusInfo(data);
           },
           error:function(data,status,er) {
               alert("error: "+data+" status: "+status+" er:"+er);
           }
       });
-
-      loadStatusInfo();
 
     }
 
@@ -94,14 +96,12 @@
           data: JSON.stringify(dataUp),
 
           success: function (data) {
-                window.status="Pump off request sent...";
+                updateStatusInfo(data);
           },
           error:function(data,status,er) {
               alert("error: "+data+" status: "+status+" er:"+er);
           }
       });
-
-      loadStatusInfo();
 
     }
 
@@ -127,9 +127,11 @@
     </div>
 
      <div class="panel panel-default">
+
       <div class="panel-heading">
         <h3 class="panel-title">Control</h3>
       </div>
+
       <div class="panel-body">
           <div class="btn-group">
             <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-time"></span> Auto Schedule</button>
@@ -139,10 +141,10 @@
 
        <div class="panel-body">
             <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="visible: onPermitted">
-              <span class="glyphicon glyphicon-fire"></span> Pump On
+              <span class="glyphicon glyphicon-play"></span> Pump On
             </button>
             <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="visible: offPermitted">
-              <span class="glyphicon glyphicon-remove"></span> Pump Off
+              <span class="glyphicon glyphicon-stop"></span> Pump Off
             </button>
         </div>
     </div>
