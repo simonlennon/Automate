@@ -40,8 +40,14 @@ public class StatusServlet extends HttpServlet {
             mapper.writeValue(response.getOutputStream(), ps);
         } else if ("pondPumpOn".equals(jsonData.get("opp"))) {
             pc.turnOnPump();
+            PondStatus ps = new PondStatus(pc.isPumpOn()?"on":"off");
+            response.setContentType("application/json");
+            mapper.writeValue(response.getOutputStream(), ps);
         } else if ("pondPumpOff".equals(jsonData.get("opp"))) {
             pc.turnOffPump();
+            PondStatus ps = new PondStatus(pc.isPumpOn()?"on":"off");
+            response.setContentType("application/json");
+            mapper.writeValue(response.getOutputStream(), ps);
         }
 
 
