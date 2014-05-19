@@ -37,13 +37,13 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 	public void writeCmd(Command cmd) throws SerialPortException {
 
 		logger.debug("writeCmd()" + cmd.toString());
-
+/*
 		if (serialPort == null) {
 			init(portName);
 		}
 
 		serialPort.writeBytes(cmd.toString().getBytes());// Write data to port
-
+*/
 	}
 
 	public void stop() throws SerialPortException {

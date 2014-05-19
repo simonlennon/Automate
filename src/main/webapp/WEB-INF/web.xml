@@ -19,9 +19,19 @@
         <servlet-class>com.simonlennon.automate.web.StatusServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>ScheduleServlet</servlet-name>
+        <servlet-class>com.simonlennon.automate.web.ScheduleServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>StatusServlet</servlet-name>
         <url-pattern>/status</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ScheduleServlet</servlet-name>
+        <url-pattern>/schedule</url-pattern>
     </servlet-mapping>
 
 </web-app>

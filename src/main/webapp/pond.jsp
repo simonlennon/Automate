@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
+    <title>Pond Control 0.1</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -20,6 +20,7 @@
     <script src="https://code.jquery.com/jquery.js"></script>
     <script type='text/javascript' src='js/knockout-3.0.0.js'></script>
 
+
     <script>
 
     var viewModel = {
@@ -32,6 +33,7 @@
         ko.applyBindings(viewModel);
         loadStatusInfo();
         setInterval(loadStatusInfo, 5000);
+        initSchedule();
     });
 
     function loadStatusInfo() {
@@ -106,8 +108,8 @@
     }
 
     </script>
-
   </head>
+
   <body>
 
     <ul class="nav nav-pills">
@@ -148,6 +150,8 @@
             </button>
         </div>
     </div>
+
+    <iframe src="pondscheduler.jsp?embedded=true" width="100%" height="300"></iframe>
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
