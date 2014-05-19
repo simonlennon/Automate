@@ -134,10 +134,11 @@
         <h3 class="panel-title">Control</h3>
       </div>
 
-      <div class="panel-body">
+       <div class="panel-body">
           <div class="btn-group">
             <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-time"></span> Auto Schedule</button>
             <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-stop"></span> Off</button>
+            <button type="button" class="btn btn-default btn-lg" onClick="window.location='pondscheduler.jsp'"><span class="glyphicon glyphicon-time"></span> Edit Schedule</button>
           </div>
        </div>
 

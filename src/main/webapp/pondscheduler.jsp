@@ -29,13 +29,51 @@
             return formatFunc(date);
         };
 
+        scheduler.templates.event_text=function(start, end, event){
+            return "Pond Active: "+event.text;
+        }
+
+        scheduler.templates.day_scale_date   = function(date){
+            var formatFunc = scheduler.date.date_to_str("%D");
+            return formatFunc(date);
+        };
+
+        <%
+            java.util.Calendar c = java.util.Calendar.getInstance();
+            int dayOfWeek = c.get(java.util.Calendar.DAY_OF_WEEK);
+        %>
+
+        var formatFuncDay = scheduler.date.date_to_str("%D");
+        var day = <%= dayOfWeek %>;
+        var day;
+
+        if(day==2){
+            dayToDisplay = new Date(2014,4,19);
+        } else if(day==3){
+             dayToDisplay = new Date(2014,4,20);
+        } else if(day==4){
+             dayToDisplay = new Date(2014,4,21);
+        } else if(day==5){
+             dayToDisplay = new Date(2014,4,22);
+        } else if(day==6){
+             dayToDisplay = new Date(2014,4,23);
+        } else if(day==7){
+             dayToDisplay = new Date(2014,4,24);
+        } else if(day==1){
+             dayToDisplay = new Date(2014,4,25);
+        }
+
 		<%
 		 if(request.getParameter("embedded")!=null){
 		%>
+
         scheduler.config.readonly = true;
-        scheduler.init('scheduler_here',new Date(2014,4,19),"day");
+        scheduler.init('scheduler_here',dayToDisplay,"day");
+
         <%} else { %>
-        scheduler.init('scheduler_here',new Date(2014,4,19),"week");
+
+        scheduler.init('scheduler_here',dayToDisplay,"week");
+
         <% } %>
 
         scheduler.load("schedule?device=pond");
@@ -57,11 +95,15 @@
 
 <body onload="init();">
 
-
+    <%
+     if(request.getParameter("embedded")==null){
+    %>
+        <input type="button" name="save" value="Save" onclick="save()" >
+        <input type="button" name="clear" value="Clear All" onclick="clearAll()" >
+        <input type="button" name="back" value="Back" onclick="window.location='pond.jsp'" >
+     <% } %>
 
 	<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:100%;'>
-	 <input type="button" name="save" value="Save" onclick="save()" >
-	 <input type="button" name="clear" value="Clear All" onclick="clearAll()" >
 		<div class="dhx_cal_navline" style="display:none">
 			<div class="dhx_cal_prev_button" style="display:none">&nbsp;</div>
 			<div class="dhx_cal_next_button" style="display:none">&nbsp;</div>
