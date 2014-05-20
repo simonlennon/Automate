@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,13 +21,13 @@
     <script src="https://code.jquery.com/jquery.js"></script>
     <script type='text/javascript' src='js/knockout-3.0.0.js'></script>
 
-
     <script>
 
     var viewModel = {
         pumpStatus: ko.observable(),
         onPermitted: ko.observable(false),
-        offPermitted: ko.observable(false)
+        offPermitted: ko.observable(false),
+        mode: ko.observable("manual")
     };
 
     $(document).ready(function () {
@@ -37,73 +38,57 @@
     });
 
     function loadStatusInfo() {
+        issueServerCommand("loadPumpStatus");
+    }
 
-        var status = new Object();
-        var dataUp = { opp: "loadPumpStatus" };
+    function pumpOn(){
+        issueServerCommand("pondPumpOn");
+    }
 
-        $.ajax({
-            url: "status",
-            type: 'POST',
-            data: JSON.stringify(dataUp),
+    function pumpOff(){
+        issueServerCommand("pondPumpOff");
+    }
 
-            success: function (data) {
-                updateStatusInfo(data);
-            },
-            error:function(data,status,er) {
-                alert("error: "+data+" status: "+status+" er:"+er);
-            }
-        });
+    function issueServerCommand(cmd) {
+          var dataUp = { opp: cmd };
+          $.ajax({
+              url: "status",
+              type: 'POST',
+              data: JSON.stringify(dataUp),
+
+              success: function (data) {
+                    updateStatusInfo(data);
+              },
+              error:function(data,status,er) {
+                  alert("error: "+data+" status: "+status+" er:"+er);
+              }
+          });
     }
 
     function updateStatusInfo(data){
 
-                    viewModel.pumpStatus(data.pumpStatus);
+        viewModel.pumpStatus(data.pumpStatus);
+        viewModel.mode(data.mode);
 
-                    if(data.pumpStatus=="on"){
-                        viewModel.offPermitted(true);
-                        viewModel.onPermitted(false);
-                    } else {
-                        viewModel.offPermitted(false);
-                        viewModel.onPermitted(true);
-                    }
-
-    }
-
-    function pumpOn(){
-
-      var dataUp = { opp: "pondPumpOn"  };
-
-      $.ajax({
-          url: "status",
-          type: 'POST',
-          data: JSON.stringify(dataUp),
-
-          success: function (data) {
-                updateStatusInfo(data);
-          },
-          error:function(data,status,er) {
-              alert("error: "+data+" status: "+status+" er:"+er);
-          }
-      });
+        if(data.pumpStatus=="on"){
+            viewModel.offPermitted(true);
+            viewModel.onPermitted(false);
+        } else {
+            viewModel.offPermitted(false);
+            viewModel.onPermitted(true);
+        }
 
     }
 
-    function pumpOff(){
+    function switchToManualMode(){
 
-      var dataUp = { opp: "pondPumpOff" };
+        issueServerCommand("pondToManual");
 
-      $.ajax({
-          url: "status",
-          type: 'POST',
-          data: JSON.stringify(dataUp),
+    }
 
-          success: function (data) {
-                updateStatusInfo(data);
-          },
-          error:function(data,status,er) {
-              alert("error: "+data+" status: "+status+" er:"+er);
-          }
-      });
+    function switchToAutoMode(){
+
+        issueServerCommand("pondToAuto");
 
     }
 
@@ -116,7 +101,7 @@
       <li><a href="index.jsp">Home</a></li>
       <li><a href="heating.jsp">Heating</a></li>
       <li class="active"><a href="pond.jsp">Pond</a></li>
-       <li><a href="#">A/C</a></li>
+      <li><a href="#">A/C</a></li>
     </ul>
 
     <div class="panel panel-default">
@@ -129,30 +114,42 @@
     </div>
 
      <div class="panel panel-default">
-
-      <div class="panel-heading">
-        <h3 class="panel-title">Control</h3>
-      </div>
-
-       <div class="panel-body">
-          <div class="btn-group">
-            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-time"></span> Auto Schedule</button>
-            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-stop"></span> Off</button>
-            <button type="button" class="btn btn-default btn-lg" onClick="window.location='pondscheduler.jsp'"><span class="glyphicon glyphicon-time"></span> Edit Schedule</button>
-          </div>
-       </div>
-
-       <div class="panel-body">
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="visible: onPermitted">
-              <span class="glyphicon glyphicon-play"></span> Pump On
-            </button>
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="visible: offPermitted">
-              <span class="glyphicon glyphicon-stop"></span> Pump Off
-            </button>
+         <div class="panel-heading">
+            <h3 class="panel-title">Mode</h3>
+         </div>
+         <div class="panel-body">
+            <input type="radio" name="mode" value="manual" data-bind="checked: mode" onChange="switchToManualMode()"> Manual
+            <input type="radio" name="mode" value="auto" data-bind="checked: mode" onChange="switchToAutoMode()"> Auto
         </div>
     </div>
 
-    <iframe src="pondscheduler.jsp?embedded=true" width="100%" height="300"></iframe>
+    <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Manual Control</h3>
+          </div>
+          <div class="panel-body">
+            <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="visible: onPermitted,disable:mode()=='auto'">
+              <span class="glyphicon glyphicon-play"></span> Pump On
+            </button>
+            <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="visible: offPermitted,disable:mode()=='auto'">
+              <span class="glyphicon glyphicon-stop"></span> Pump Off
+            </button>
+          </div>
+    </div>
+
+    <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Schedule</h3>
+          </div>
+
+        <div class="panel-body">
+            <button type="button" class="btn btn-default btn-lg" onClick="window.location='pondscheduler.jsp'" data-bind="disable:mode()=='auto'"><span class="glyphicon glyphicon-time"></span> Edit Schedule</button>
+        </div>
+
+        <iframe src="pondscheduler.jsp?embedded=true" width="100%" height="300"></iframe>
+    </div>
+
+
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
