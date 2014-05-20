@@ -25,6 +25,7 @@ public class StatusServlet extends HttpServlet {
         //We will always return the current status
         BoilerControllerView bcv = (BoilerControllerView) getServletContext().getAttribute("bcv");
         PondController pc = (PondController) getServletContext().getAttribute("pc");
+        response.setContentType("application/json");
 
         if ("boost".equals(jsonData.get("opp"))) {
             boost(bcv, jsonData);
@@ -32,28 +33,28 @@ public class StatusServlet extends HttpServlet {
             bcv.getBoiler().cancelBoost();
         } else if ("loadStatus".equals(jsonData.get("opp"))) {
             Status status = new Status(bcv.getRadsActive() ? "on" : "off", bcv.getBoilerActive() ? "on" : "off", bcv.getBoiler().isBoostingTank() ? "on" : "off", bcv.getBoiler().isBoostingRads() ? "on" : "off");
-            response.setContentType("application/json");
             mapper.writeValue(response.getOutputStream(), status);
         } else if ("loadPumpStatus".equals(jsonData.get("opp"))) {
-            PondStatus ps = new PondStatus(pc.isPumpOn()?"on":"off");
-            response.setContentType("application/json");
-            mapper.writeValue(response.getOutputStream(), ps);
+            mapper.writeValue(response.getOutputStream(), getPondStatus(pc));
         } else if ("pondPumpOn".equals(jsonData.get("opp"))) {
             pc.turnOnPump();
-            PondStatus ps = new PondStatus(pc.isPumpOn()?"on":"off");
-            response.setContentType("application/json");
-            mapper.writeValue(response.getOutputStream(), ps);
+            mapper.writeValue(response.getOutputStream(), getPondStatus(pc));
         } else if ("pondPumpOff".equals(jsonData.get("opp"))) {
             pc.turnOffPump();
-            PondStatus ps = new PondStatus(pc.isPumpOn()?"on":"off");
-            response.setContentType("application/json");
-            mapper.writeValue(response.getOutputStream(), ps);
+            mapper.writeValue(response.getOutputStream(), getPondStatus(pc));
+        } else if ("pondToManual".equals(jsonData.get("opp"))) {
+            pc.switchToManual();
+            mapper.writeValue(response.getOutputStream(), getPondStatus(pc));
+        } else if ("pondToAuto".equals(jsonData.get("opp"))) {
+            pc.switchToAuto();
+            mapper.writeValue(response.getOutputStream(), getPondStatus(pc));
         }
-
-
     }
 
-
+    protected PondStatus getPondStatus(PondController pc){
+        PondStatus ps = new PondStatus(pc.isPumpOn()?"on":"off",pc.getMode());
+        return ps;
+    }
 
 
     public void boost(BoilerControllerView bcv, Map<String, Object> jsonData) {
@@ -71,8 +72,9 @@ public class StatusServlet extends HttpServlet {
 
     class PondStatus {
 
-        PondStatus(String pumpStatus) {
+        PondStatus(String pumpStatus, String mode) {
             this.pumpStatus = pumpStatus;
+            this.mode = mode;
         }
 
         public String getPumpStatus() {
@@ -84,6 +86,16 @@ public class StatusServlet extends HttpServlet {
         }
 
         String pumpStatus;
+
+        public String getMode() {
+            return mode;
+        }
+
+        public void setMode(String mode) {
+            this.mode = mode;
+        }
+
+        String mode;
     }
 
     class Status {

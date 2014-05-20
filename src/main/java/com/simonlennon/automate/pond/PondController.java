@@ -1,5 +1,6 @@
 package com.simonlennon.automate.pond;
 
+import com.simonlennon.automate.PersistedProperties;
 import com.simonlennon.automate.serialcomms.*;
 import com.simonlennon.automate.timeline.Activation;
 import com.simonlennon.automate.timeline.ActivationHelper;
@@ -13,6 +14,7 @@ import jssc.SerialPortException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 
@@ -42,19 +44,29 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
     protected boolean started;
 
     public void startup() {
-
         init();
     }
 
-    public void init(){
-        TimelineStore tls = new TimelineStore();
-        if (tls != null) {
-            pondTimeline = tls.getTodaysTimeline(TimelineStore.POND);
-            scheduleEvents();
-            started = true;
-            checkAndSetDeviceStates();
-        } else {
-            logger.info("init(): Pond controller must be in manual mode");
+    public void init() {
+
+        try {
+            initMode();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (mode.equals(AUTO_MODE)) {
+
+            TimelineStore tls = new TimelineStore();
+            if (tls != null) {
+                pondTimeline = tls.getTodaysTimeline(TimelineStore.POND);
+                scheduleEvents();
+                started = true;
+                checkAndSetDeviceStates();
+            } else {
+                logger.info("init(): Pond controller must be in manual mode");
+            }
+
         }
     }
 
@@ -65,13 +77,11 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
     }
 
     public void shutdown() {
-
         if (eventTimer != null) {
             eventTimer.cancel();
         }
         eventTimer = null;
         started = false;
-
     }
 
     protected void checkAndSetDeviceStates() {
@@ -197,5 +207,41 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
 
     }
 
+    protected void restart() {
+        shutdown();
+        startup();
+    }
 
+    public static final String MODE_PROP_KEY = "POND_MODE";
+    public static final String AUTO_MODE = "auto";
+    public static final String MANUAL_MODE = "manual";
+    protected String mode = MANUAL_MODE;
+
+    public void switchToManual() throws IOException {
+        PersistedProperties props = PersistedProperties.getInstance();
+        props.saveProp(MODE_PROP_KEY, MANUAL_MODE);
+        mode = MANUAL_MODE;
+        restart();
+    }
+
+    public void switchToAuto() throws IOException {
+        PersistedProperties props = PersistedProperties.getInstance();
+        props.saveProp(MODE_PROP_KEY, AUTO_MODE);
+        mode = AUTO_MODE;
+        restart();
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    protected void initMode() throws IOException {
+        PersistedProperties props = PersistedProperties.getInstance();
+        String val = props.getProp(MODE_PROP_KEY);
+        if (val == null) {
+            this.mode = MANUAL_MODE;
+        } else {
+            this.mode = val;
+        }
+    }
 }
