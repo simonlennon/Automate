@@ -1,5 +1,6 @@
 package com.simonlennon.automate.timeline;
 
+import com.simonlennon.automate.PersistedProperties;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -40,8 +41,10 @@ public class TimelineStore {
 
     protected OneDayTimeline getPondTimeline() {
 
+        String scheduleFile = PersistedProperties.getInstance().getProp("pond.schedule.path");
+
         ReadXMLSchedule reader = new ReadXMLSchedule();
-        File xmlFile = new File("pondschedule.xml");
+        File xmlFile = new File(scheduleFile);
         if (!xmlFile.exists()) {
             return null;
         }
@@ -67,6 +70,7 @@ public class TimelineStore {
 
 
         for (ReadXMLSchedule.EventInfo e : events) {
+
             Date start = null;
             Date end = null;
             try {
