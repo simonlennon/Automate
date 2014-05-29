@@ -72,7 +72,7 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
 
     @Override
     public void timelineExpired(ExpiryEvent event) {
-        logger.debug("timelineExpired(): Timeline has expired so loading next timeline.");
+        logger.debug("timelineExpired(): Timeline has expired so reinitialising .");
         init();
     }
 
@@ -120,25 +120,23 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
     }
 
     public void turnOnPump() {
+
         try {
-            logger.debug("turnOnPump() writing command to serial");
             Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), POND_ON_CMD);
             msi.writeCmd(c);
             pumpOn = true;
-            logger.debug("turnOnPump() command written");
         } catch (SerialPortException e) {
             logger.debug("turnOnPump() serial error", e);
             logger.error("Serial error turning on pond pump. Turn on debug for stack trace.");
         }
+
     }
 
     public void turnOffPump() {
         try {
-            logger.debug("turnOffPond() writing command to serial");
             Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), POND_OFF_CMD);
             msi.writeCmd(c);
             pumpOn = false;
-            logger.debug("turnOffPond() command written");
         } catch (SerialPortException e) {
             logger.debug("turnOffPond() serial error", e);
             logger.error("Serial error turning off pond pump. Turn on debug for stack trace.");
@@ -147,10 +145,8 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
 
     public void turnOnLights() {
         try {
-            logger.debug("turnOnLights() writing command to serial");
             Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), LIGHT_ON_CMD);
             msi.writeCmd(c);
-            logger.debug("turnOnLights() command written");
         } catch (SerialPortException e) {
             logger.debug("turnOnLights() serial error", e);
             logger.error("Serial error turning on lights. Turn on debug for stack trace.");
@@ -159,10 +155,8 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
 
     public void turnOffLights() {
         try {
-            logger.debug("turnOffLights() writing command to serial");
             Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), LIGHTS_OFF_CMD);
             msi.writeCmd(c);
-            logger.debug("turnOffLights() command written");
         } catch (SerialPortException e) {
 
             logger.debug("turnOffLights() serial error", e);
@@ -172,10 +166,8 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
 
     public void requestStatus() {
         try {
-            logger.debug("requestStatus() writing command to serial");
             Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), GET_STATUS_CMD);
             msi.writeCmd(c);
-            logger.debug("requestStatus() command written");
         } catch (SerialPortException e) {
             logger.debug("requestStatus() serial error", e);
             logger.error("Serial error requesting status. Turn on debug for stack trace.");
@@ -192,7 +184,21 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
     }
 
     public void handleCommand(Command cmd) {
+
         logger.debug("handleCommand(): " + cmd.toString());
+
+        if (cmd.getFrom().equals(Device.PONDCONT) && cmd.getType() == MessageType.DATA && cmd.getCommand() == POND_REFRESH_REQUEST) {
+            if (mode.equals(AUTO_MODE)) {
+                checkAndSetDeviceStates();
+            } else if (mode.equals(MANUAL_MODE)) {
+                if (isPumpOn()) {
+                    turnOnPump();
+                } else {
+                    turnOffPump();
+                }
+            }
+        }
+
     }
 
     public synchronized void handleTimelineEvent(EventTask eventTask) {
