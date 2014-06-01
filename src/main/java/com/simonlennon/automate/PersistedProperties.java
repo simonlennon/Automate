@@ -64,11 +64,13 @@ public class PersistedProperties {
     }
 
     public synchronized void saveProp(String key, String value) {
-        File f = new File(FILE_NAME);
+    	String propDir = System.getProperty(PROP_DIR_KEY);
+        File f = new File(propDir, FILE_NAME);
         props.put(key, value);
         try {
             props.store(new FileOutputStream(f), "Last write: key=" + key + " value=" + value);
         } catch (IOException e) {
+        	logger.debug("Error saving properties",e);
             throw new RuntimeException("Error saving prop",e);
         }
     }
