@@ -67,7 +67,8 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
                 logger.info("init(): Pond controller must be in manual mode");
             }
 
-        }
+        } 
+        
     }
 
     @Override
@@ -227,6 +228,9 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
         PersistedProperties props = PersistedProperties.getInstance();
         props.saveProp(MODE_PROP_KEY, MANUAL_MODE);
         mode = MANUAL_MODE;
+        if(pumpOn){
+        	turnOffPump();
+        }
         restart();
     }
 
