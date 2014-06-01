@@ -4,6 +4,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.simonlennon.automate.PersistedProperties;
+
 import java.io.*;
 
 /**
@@ -23,7 +26,9 @@ public class ScheduleServlet extends HttpServlet {
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
 
-            File f = new File("pondschedule.xml");
+            String scheduleFile = PersistedProperties.getInstance().getProp("pond.schedule.path");
+            
+            File f = new File(scheduleFile);
             BufferedReader reader = new BufferedReader(new FileReader(f));
             BufferedWriter writer = new BufferedWriter(response.getWriter());
 
@@ -55,7 +60,9 @@ public class ScheduleServlet extends HttpServlet {
 
 
         if("pond".equals(device)){
-            File f = new File("pondschedule.xml");
+        	
+        	String scheduleFile = PersistedProperties.getInstance().getProp("pond.schedule.path");
+            File f = new File(scheduleFile);
             FileWriter writer = new FileWriter(f);
             writer.write(data);
             writer.close();
