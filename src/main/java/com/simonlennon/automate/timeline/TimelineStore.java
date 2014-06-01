@@ -84,9 +84,8 @@ public class TimelineStore {
 
             cal.setTime(start);
             if (day == cal.get(Calendar.DAY_OF_WEEK)) {
-                copyDateInto(today, start);
-                copyDateInto(today, end);
-                ScheduledActivation sa1 = new ScheduledActivation(start, end);
+            	
+                ScheduledActivation sa1 = new ScheduledActivation(adjustToToday(today, start), adjustToToday(today, end));
                 timeline.addActivation(sa1);
             }
 
@@ -96,9 +95,9 @@ public class TimelineStore {
 
     }
 
-    protected void copyDateInto(Date sourceDate, Date target) {
+    protected Date adjustToToday(Date sourceDate, Date scheduleDate) {
         Calendar t = Calendar.getInstance();
-        t.setTime(target);
+        t.setTime(scheduleDate);
 
         Calendar s = Calendar.getInstance();
         s.setTime(sourceDate);
@@ -106,8 +105,10 @@ public class TimelineStore {
         t.set(Calendar.YEAR, s.get(Calendar.YEAR));
         t.set(Calendar.MONTH, s.get(Calendar.MONTH));
         t.set(Calendar.DAY_OF_MONTH, s.get(Calendar.DAY_OF_MONTH));
-        t.set(Calendar.MINUTE, 0);
+        t.set(Calendar.SECOND, 0);
         t.set(Calendar.MILLISECOND, 0);
+        
+        return t.getTime();
 
     }
 
