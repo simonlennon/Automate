@@ -1,0 +1,1 @@
+Automate helpers and shared constants.
