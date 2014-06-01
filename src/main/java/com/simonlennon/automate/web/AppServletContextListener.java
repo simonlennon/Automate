@@ -1,5 +1,6 @@
 package com.simonlennon.automate.web;
 
+import com.simonlennon.automate.PersistedProperties;
 import com.simonlennon.automate.heating.BoilerController;
 import com.simonlennon.automate.pond.PondController;
 import com.simonlennon.automate.serialcomms.MastercontSerialInterface;
@@ -30,9 +31,7 @@ public class AppServletContextListener implements ServletContextListener {
         pc = new PondController();
         MastercontSerialInterface msi = new MastercontSerialInterface();
         try {
-          //  msi.init(System.getProperty("MCPORT"));
-        	// msi.init("/dev/ttyACM0");
-        	 msi.init("COM4");
+        	 msi.init(PersistedProperties.getInstance().getProp("serial.port"));
         } catch (SerialPortException e) {
             e.printStackTrace();
         }
