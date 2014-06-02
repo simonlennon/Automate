@@ -29,7 +29,7 @@ void setup()
   Serial.println(F("Pondcont started;"));
   
   //Request the controller to reset our state.
-  sendWirelessMsg("0:1:1:0:6;");
+  sendWirelessMsg("0:1:1:0:6");
   
 }
 
@@ -88,19 +88,18 @@ void processCommand(String commandStringIn){
     Serial.println("Got ping command, responding");
     String pingResponse = sourceDevice+":1:1:"+txId+":0";
     Serial.println(pingResponse);  
-    delay(100);
     sendWirelessMsg(pingResponse);
 
   } 
   else if (cmd == "1"){
     Serial.println("pulling low");
     digitalWrite(4, LOW);
-    sendWirelessMsg(sourceDevice+":1:1:"+txId+":1;");
+    sendWirelessMsg(sourceDevice+":1:1:"+txId+":1");
   }
   else if (cmd == "2"){
     Serial.println("pulling high");
     digitalWrite(4, HIGH);
-    sendWirelessMsg(sourceDevice+":1:1:"+txId+":2;");
+    sendWirelessMsg(sourceDevice+":1:1:"+txId+":2");
   }
 
 
