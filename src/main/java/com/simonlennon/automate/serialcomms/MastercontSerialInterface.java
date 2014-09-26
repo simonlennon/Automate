@@ -55,6 +55,8 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
 	public void serialEvent(SerialPortEvent event) {
 
+        logger.debug("Serial event processing");
+
 		if (event.isRXCHAR()) {// If data is available
 			try {
 
