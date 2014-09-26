@@ -55,8 +55,6 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
 	public void serialEvent(SerialPortEvent event) {
 
-        logger.debug("Serial event processing");
-
 		if (event.isRXCHAR()) {// If data is available
 			try {
 
@@ -64,12 +62,17 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 					String b = serialPort.readString(1);
 
 					if (b != null) {
-                        logger.debug("got data from serial:"+b);
+
 						if (";".equals(b)) {
-							if(inboundCmd.trim().length()!=0){
-								handleCommand(inboundCmd.trim());
-							}
-							inboundCmd = "";
+
+                            try {
+                                if (inboundCmd.trim().length() != 0) {
+                                    handleCommand(inboundCmd.trim());
+                                }
+                            } finally {
+                                inboundCmd = "";
+                            }
+
 						} else {
 							inboundCmd += b;
 						}

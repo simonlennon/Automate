@@ -189,6 +189,9 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
         logger.debug("handleCommand(): " + cmd.toString());
 
         if (cmd.getFrom().equals(Device.PONDCONT) && cmd.getType() == MessageType.DATA && cmd.getCommand() == POND_REFRESH_REQUEST) {
+
+            logger.debug("handleCommand(): pond state refresh requested");
+
             if (mode.equals(AUTO_MODE)) {
                 checkAndSetDeviceStates();
             } else if (mode.equals(MANUAL_MODE)) {
