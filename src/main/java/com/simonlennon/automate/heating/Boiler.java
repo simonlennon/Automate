@@ -25,26 +25,26 @@ public class Boiler {
     private static Logger  logger = LogManager.getLogger(Boiler.class);
 
     public Boiler() {
-
-        gpio = GpioFactory.getInstance();
-        pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00, "BOILER_RELAY", PinState.LOW);
-
+        //gpio = GpioFactory.getInstance();
+       // pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00, "BOILER_RELAY", PinState.LOW);
     }
 
     public void turnOn() {
         logger.info("Boiler turning on");
-        pin.high();
+        on = true;
+       // pin.high();
         lastOn = new Date();
     }
 
     public void turnOff() {
         logger.info("Boiler turning off");
-        pin.low();
+        on = false;
+       // pin.low();
         lastOff = new Date();
     }
 
     public boolean isOn() {
-        return pin.isHigh();
+        return on;
     }
 
 }

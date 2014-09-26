@@ -22,19 +22,21 @@ public class Rads {
     private static Logger logger = LogManager.getLogger(Boiler.class);
 
     public Rads(){
-        gpio = GpioFactory.getInstance();
-        pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "RADS_RELAY", PinState.LOW);
+//        gpio = GpioFactory.getInstance();
+  //      pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "RADS_RELAY", PinState.LOW);
     }
 
     public void turnOn() {
         logger.info("Rads turning on");
-        pin.high();
+        on = true;
+    //    pin.high();
         lastOn = new Date();
     }
 
     public void turnOff() {
         logger.info("Rads turning off");
-        pin.low();
+        on = false;
+      //  pin.low();
         lastOff = new Date();
     }
 
