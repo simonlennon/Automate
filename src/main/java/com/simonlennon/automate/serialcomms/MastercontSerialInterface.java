@@ -112,8 +112,6 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 				fireCommand(cmd);
 			} catch (InvalidCommandException e) {
 				logger.warn("Could not read inbound command " + e.getMessage());
-				if (logger.isDebugEnabled())
-					logger.debug("Could not read inbound command", e);
 			}
 		}
 
