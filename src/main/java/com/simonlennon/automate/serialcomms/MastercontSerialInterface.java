@@ -95,7 +95,7 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 	}
 
 	protected void handleCommand(String cmd) {
-
+        logger.debug("handleCommand:"+cmd);
 		if (cmd.startsWith("DEBUG:")) {
 			logger.debug("DEBUG Message from micro processor: " + cmd);
 		} else if (cmd.startsWith("INFO:")) {
