@@ -22,7 +22,7 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
 	protected SerialPort serialPort;
 	protected String portName;
-	protected String inboundCmd;
+	protected String inboundCmd = "";
 
 	public void init(String portName) throws SerialPortException {
 		this.portName = portName;
@@ -59,6 +59,7 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 			try {
 
 				for (int i = 0; i < event.getEventValue(); i++) {
+
 					String b = serialPort.readString(1);
 
 					if (b != null) {
@@ -101,7 +102,7 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 	}
 
 	protected void handleCommand(String cmd) {
-        logger.debug("handleCommand:"+cmd);
+
 		if (cmd.startsWith("DEBUG:")) {
 			logger.debug("DEBUG Message from micro processor: " + cmd);
 		} else if (cmd.startsWith("INFO:")) {
@@ -111,6 +112,7 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 		} else if (cmd.startsWith("ERROR:")) {
 			logger.debug("ERROR Message from micro processor: " + cmd);
 		} else {
+            logger.debug("handleCommand:"+cmd);
 			try {
 				fireCommand(cmd);
 			} catch (InvalidCommandException e) {
