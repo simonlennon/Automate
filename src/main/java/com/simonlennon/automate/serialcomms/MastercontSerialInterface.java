@@ -62,6 +62,7 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 					String b = serialPort.readString(1);
 
 					if (b != null) {
+                        logger.debug("got data from serial:"+b);
 						if (";".equals(b)) {
 							if(inboundCmd.trim().length()!=0){
 								handleCommand(inboundCmd.trim());
