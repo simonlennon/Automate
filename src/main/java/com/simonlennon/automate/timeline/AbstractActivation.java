@@ -1,6 +1,6 @@
 package com.simonlennon.automate.timeline;
 
-        import com.simonlennon.automate.timeline.Activation;
+import com.simonlennon.automate.timeline.Activation;
 
         import java.util.Date;
 

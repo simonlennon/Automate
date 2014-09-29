@@ -23,7 +23,7 @@
       <li class="active"><a href="#">Home</a></li>
       <li><a href="heating.jsp">Heating</a></li>
       <li><a href="pond.jsp">Pond</a></li>
-       <li><a href="#">A/C</a></li>
+      <li><a href="generic_message.jsp">Generic</a></li>
     </ul>
 
     <div class="label label-success">Hello</div>

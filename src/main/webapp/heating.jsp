@@ -22,7 +22,50 @@
 
     <script>
 
+    var statusMessageDefault = "Heating Status";
+    var connected = true;
+
+    $(function() {
+        $.ajaxSetup({
+            error: handleError
+        });
+    });
+
+    function handleError(jqXHR, exception){
+        if (jqXHR.status === 0) {
+            setDisconnected();
+        } else if (jqXHR.status == 404) {
+            alert('Requested page not found. [404]');
+        } else if (jqXHR.status == 500) {
+            alert('Internal Server Error [500].');
+        } else if (exception === 'parsererror') {
+            alert('Requested JSON parse failed.');
+        } else if (exception === 'timeout') {
+            alert('Time out error.');
+        } else if (exception === 'abort') {
+            alert('Ajax request aborted.');
+        } else {
+            alert('Uncaught Error.\n' + jqXHR.responseText);
+        }
+    }
+
+    function setDisconnected(){
+        if(connected){
+            alert("Could not connect to server...");
+            connected = false;
+        }
+        viewModel.statusMessage(statusMessageDefault + ": Error - Could not connect...");
+    }
+
+    function setConnected(){
+        if(!connected){
+            connected = true;
+        }
+        viewModel.statusMessage(statusMessageDefault);
+    }
+
     var viewModel = {
+        statusMessage: ko.observable(statusMessageDefault),
         boilerStatus: ko.observable(),
         radiatorStatus: ko.observable(),
         boostTime: ko.observable(60),
@@ -39,19 +82,22 @@
         setInterval(loadStatusInfo, 5000);
     });
 
-
-
     function loadStatusInfo() {
 
         var status = new Object();
-        var dataUp = { opp: "loadStatus" };
+        var dataUp = { opp: "loadHeatingStatus" };
 
         $.ajax({
             url: "status",
             type: 'POST',
             data: JSON.stringify(dataUp),
+            timeout: 15000,
 
             success: function (data) {
+
+            if(!connected)
+                setConnected();
+
             viewModel.boilerStatus(data.boilerStatus);
             viewModel.radiatorStatus(data.radsStatus);
             viewModel.tankBoostStatus(data.tankBoostStatus);
@@ -64,9 +110,6 @@
                     viewModel.boostPermitted(false);
                     viewModel.cancelPermitted(true);
                 }
-            },
-            error:function(data,status,er) {
-                alert("error: "+data+" status: "+status+" er:"+er);
             }
         });
     }
@@ -81,11 +124,9 @@
           data: JSON.stringify(dataUp),
 
           success: function (data) {
-
-          },
-          error:function(data,status,er) {
-              alert("error: "+data+" status: "+status+" er:"+er);
+            window.status="Boost request sent...";
           }
+
       });
 
       loadStatusInfo();
@@ -102,11 +143,9 @@
           data: JSON.stringify(dataUp),
 
           success: function (data) {
-                window.status="Boost cancel request sent..."
-          },
-          error:function(data,status,er) {
-              alert("error: "+data+" status: "+status+" er:"+er);
+            window.status="Boost cancel request sent...";
           }
+
       });
 
       loadStatusInfo();
@@ -116,18 +155,18 @@
     </script>
 
   </head>
-  <body>
+  <body bgcolor="#E6E6FA">
 
     <ul class="nav nav-pills">
       <li><a href="index.jsp">Home</a></li>
       <li class="active"><a href="#">Heating</a></li>
       <li><a href="pond.jsp">Pond</a></li>
-       <li><a href="#">A/C</a></li>
+      <li><a href="generic_message.jsp">Generic</a></li>
     </ul>
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Heating Status</h3>
+        <h3 class="panel-title" data-bind="text: statusMessage"></h3>
       </div>
       <div class="panel-body">
         Boiler is <span data-bind="text: boilerStatus">-</span>

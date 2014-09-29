@@ -181,7 +181,6 @@ public class PondController implements CommandProcessor, TimelineEventHandler {
 
     public void setMastercontSerialInterface(MastercontSerialInterface msi) {
         this.msi = msi;
-        msi.addCommandListener(this);
     }
 
     public void handleCommand(Command cmd) {
