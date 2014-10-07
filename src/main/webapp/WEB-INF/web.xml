@@ -14,6 +14,11 @@
         <listener-class>com.simonlennon.automate.web.AppServletContextListener</listener-class>
     </listener>
 
+    <login-config>
+        <auth-method>CLIENT-CERT</auth-method>
+        <realm-name>Secure Area</realm-name>
+    </login-config>
+
     <servlet>
         <servlet-name>StatusServlet</servlet-name>
         <servlet-class>com.simonlennon.automate.web.StatusServlet</servlet-class>
