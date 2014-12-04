@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <jettyVersion>7.2.0.v20101020</jettyVersion>
+
     </properties>
 
     <dependencies>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>${jettyVersion}</version>
+            <version>9.2.2.v20140723</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -68,6 +68,19 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+            <version>9.2.2.v20140723</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <version>9.2.2.v20140723</version>
+        </dependency>
+
     </dependencies>
     <build>
 
@@ -85,12 +98,15 @@
             </plugins>
         </pluginManagement>
         <plugins>
+
             <plugin>
                 <!-- This plugin is needed for the servlet example -->
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jettyVersion}</version>
+                <version>9.2.5.v20141112</version>
             </plugin>
+
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
