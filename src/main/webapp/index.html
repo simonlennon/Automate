@@ -16,14 +16,17 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
+
+
   </head>
   <body>
 
     <ul class="nav nav-pills">
       <li class="active"><a href="#">Home</a></li>
-      <li><a href="heating.jsp">Heating</a></li>
-      <li><a href="pond.jsp">Pond</a></li>
-      <li><a href="generic_message.jsp">Generic</a></li>
+      <li><a href="heating.html">Heating</a></li>
+      <li><a href="pond.html">Pond</a></li>
+      <li><a href="generic_message.html">Generic</a></li>
     </ul>
 
     <div class="label label-success">Hello</div>
@@ -31,6 +34,28 @@
     Boiler <div class="label label-success" id="boiler-status">-</div>
     <br/>
     Rads <div class="label label-success" id="rads-status">-</div>
+
+
+    <script>
+        var ws = new WebSocket("ws://10.139.80.128:8080/notify");
+
+        ws.onopen = function() {
+            document.write("WebSocket opened <br>");
+            ws.send("Hello Server");
+        };
+
+        ws.onmessage = function(evt) {
+            document.write("Message: " + evt.data);
+        };
+
+        ws.onclose = function() {
+            document.write("<br>WebSocket closed");
+        };
+
+        ws.onerror = function(err) {
+            document.write("Error: " + err);
+        };
+    </script>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>

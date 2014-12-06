@@ -100,7 +100,7 @@
     %>
         <input type="button" name="save" value="Save" onclick="save()" >
         <input type="button" name="clear" value="Clear All" onclick="clearAll()" >
-        <input type="button" name="back" value="Back" onclick="window.location='pond.jsp'" >
+        <input type="button" name="back" value="Back" onclick="window.location='pond.html'" >
      <% } %>
 
 	<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:100%;'>

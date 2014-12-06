@@ -23,7 +23,7 @@
 
     <script>
 
-    var statusMessageDefault = "Pond Status";
+    var statusMessageDefault = "Send Command";
     var connected = true;
 
     $(function() {
@@ -67,10 +67,9 @@
 
     var viewModel = {
         statusMessage: ko.observable(statusMessageDefault),
-        pumpStatus: ko.observable(),
-        onPermitted: ko.observable(false),
-        offPermitted: ko.observable(false),
-        mode: ko.observable("manual")
+        command: ko.observable(),
+        outboundHistory: ko.observable(),
+        inboundHistory: ko.observable()
     };
 
     $(document).ready(function () {
@@ -79,16 +78,27 @@
         setInterval(loadStatusInfo, 5000);
     });
 
+
     function loadStatusInfo() {
-        issueServerCommand("loadPumpStatus");
-    }
+        var status = new Object();
+        var dataUp = { opp: "loadGenericStatus" };
 
-    function pumpOn(){
-        issueServerCommand("pondPumpOn");
-    }
+        $.ajax({
+            url: "status",
+            type: 'POST',
+            data: JSON.stringify(dataUp),
+            timeout: 15000,
 
-    function pumpOff(){
-        issueServerCommand("pondPumpOff");
+            success: function (data) {
+
+                updateStatusInfo(data);
+
+                if(!connected)
+                    setConnected();
+            }
+
+        });
+
     }
 
     function issueServerCommand(cmd) {
@@ -103,36 +113,37 @@
                     updateStatusInfo(data);
                         if(!connected)
                             setConnected();
+
+                    updateStatusInfo(data);
               }
           });
     }
 
+    function issueGenericCommand() {
+
+          var dataUp = { opp: "issueGenericCommand", command: viewModel.command() };
+
+          $.ajax({
+              url: "status",
+              type: 'POST',
+              data: JSON.stringify(dataUp),
+
+              success: function (data) {
+                    updateStatusInfo(data);
+                        if(!connected)
+                            setConnected();
+
+                    updateStatusInfo(data);
+              }
+          });
+
+    }
+
     function updateStatusInfo(data){
-
-        viewModel.pumpStatus(data.pumpStatus);
-        viewModel.mode(data.mode);
-
-        if(data.pumpStatus=="on"){
-            viewModel.offPermitted(true);
-            viewModel.onPermitted(false);
-        } else {
-            viewModel.offPermitted(false);
-            viewModel.onPermitted(true);
-        }
-
+        viewModel.outboundHistory(JSON.stringify(data.outboundHistory));
+        viewModel.inboundHistory(JSON.stringify(data.inboundHistory));
     }
 
-    function switchToManualMode(){
-
-        issueServerCommand("pondToManual");
-
-    }
-
-    function switchToAutoMode(){
-
-        issueServerCommand("pondToAuto");
-
-    }
 
     </script>
   </head>
@@ -140,58 +151,40 @@
   <body>
 
     <ul class="nav nav-pills">
-      <li><a href="index.jsp">Home</a></li>
-      <li><a href="heating.jsp">Heating</a></li>
-      <li class="active"><a href="pond.jsp">Pond</a></li>
-      <li><a href="generic_message.jsp">Generic</a></li>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="heating.html">Heating</a></li>
+      <li><a href="pond.html">Pond</a></li>
+      <li class="active"><a href="#">Generic</a></li>
     </ul>
 
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title" data-bind="text: statusMessage"></h3>
-      </div>
-      <div class="panel-body">
-        Pond pump is <span data-bind="text: pumpStatus">-</span>
-      </div>
-    </div>
-
-     <div class="panel panel-default">
-         <div class="panel-heading">
-            <h3 class="panel-title">Mode</h3>
-         </div>
-         <div class="panel-body">
-            <input type="radio" name="mode" value="manual" data-bind="checked: mode" onChange="switchToManualMode()"> Manual
-            <input type="radio" name="mode" value="auto" data-bind="checked: mode" onChange="switchToAutoMode()"> Auto
-        </div>
-    </div>
-
-    <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 class="panel-title">Manual Control</h3>
+             <h3 class="panel-title" data-bind="text: statusMessage"></h3>
           </div>
           <div class="panel-body">
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOn()" data-toggle="button" data-bind="visible: onPermitted,disable:mode()=='auto'">
-              <span class="glyphicon glyphicon-play"></span> Pump On
-            </button>
-            <button type="button" class="btn btn-default btn-lg" onClick="pumpOff()" data-toggle="button" data-bind="visible: offPermitted,disable:mode()=='auto'">
-              <span class="glyphicon glyphicon-stop"></span> Pump Off
-            </button>
+            <div class="col-lg-6">
+                <div class="input-group">
+                  <input type="text" class="form-control" data-bind="value: command">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onClick="issueGenericCommand()">Send</button>
+                  </span>
+                </div>
+            <div class="alert alert-info" role="alert" data-bind="text: outboundHistory">...</div>
+            <button class="btn btn-default" type="button" onClick="issueServerCommand('genericClearOutboundHistory')">Clear History</button>
+            </div>
           </div>
     </div>
 
     <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Schedule</h3>
-          </div>
-
-        <div class="panel-body">
-            <button type="button" class="btn btn-default btn-lg" onClick="window.location='pondscheduler.jsp'" data-bind="disable:mode()=='auto'"><span class="glyphicon glyphicon-time"></span> Edit Schedule</button>
-        </div>
-
-        <iframe src="pondscheduler.jsp?embedded=true" width="100%" height="300"></iframe>
+      <div class="panel-heading">
+        <h3 class="panel-title">Inbound Commands</h3>
+      </div>
+      <div class="panel-body">
+       <div class="col-lg-6">
+         <div class="alert alert-info" role="alert" data-bind="text: inboundHistory">...</div>
+         <button class="btn btn-default" type="button" onClick="issueServerCommand('genericClearInboundHistory')">Clear History</button>
+      </div></div>
     </div>
-
-
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
