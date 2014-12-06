@@ -1,11 +1,15 @@
 package com.simonlennon.automate.web;
 
 import com.simonlennon.automate.PersistedProperties;
+import com.simonlennon.automate.controller.Controller;
 import com.simonlennon.automate.generic.GenericController;
 import com.simonlennon.automate.heating.BoilerController;
 import com.simonlennon.automate.pond.PondController;
+import com.simonlennon.automate.serialcomms.CommandProcessor;
 import com.simonlennon.automate.serialcomms.MastercontSerialInterface;
 import jssc.SerialPortException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -15,47 +19,80 @@ import javax.servlet.ServletContextListener;
  */
 public class AppServletContextListener implements ServletContextListener {
 
-    BoilerController bc;
-    PondController pc;
-    GenericController gc;
+    public static final String CONTROLLERS_KEY = "CONTROLLERS";
+
+    public BoilerController getBoilerController() {
+        return bc;
+    }
+
+    public PondController getPondController() {
+        return pc;
+    }
+
+    public GenericController getGenericController() {
+        return gc;
+    }
+
+    protected BoilerController bc;
+    protected PondController pc;
+    protected GenericController gc;
+
+    protected MastercontSerialInterface msi;
+
+    private static Logger logger = LogManager
+            .getLogger(MastercontSerialInterface.class);
+
 
     @Override
     public void contextDestroyed(ServletContextEvent evt) {
         bc.shutdown();
+        pc.shutdown();
+        gc.shutdown();
+
+        try {
+            msi.stop();
+        } catch (SerialPortException e) {
+            logger.error("Error shutting down serial interface", e);
+        }
+
+
     }
 
     @Override
     public void contextInitialized(ServletContextEvent evt) {
 
 
-        MastercontSerialInterface msi = new MastercontSerialInterface();
+        msi = new MastercontSerialInterface();
         try {
             msi.init(PersistedProperties.getInstance().getProp("serial.port"));
         } catch (SerialPortException e) {
-            e.printStackTrace();
+            logger.error("Error shutting down serial interface", e);
         }
 
-        //TODO make the boiler controller standard
+
         bc = new BoilerController();
-        bc.startup();
-        evt.getServletContext().setAttribute("bcv",new BoilerControllerView(bc));
+        registerController(bc, evt);
 
         pc = new PondController();
-        pc.setMastercontSerialInterface(msi);
-        msi.addCommandListener(pc);
-        pc.startup();
-        evt.getServletContext().setAttribute("pc",pc);
+        registerController(pc, evt);
 
         gc = new GenericController();
-        gc.setMastercontSerialInterface(msi);
-        msi.addCommandListener(gc);
-        gc.startup();
-        evt.getServletContext().setAttribute("gc",gc);
+        registerController(gc, evt);
 
+        evt.getServletContext().setAttribute(CONTROLLERS_KEY,this);
 
     }
-    
-   // @TODO stop the serial port on close, also the controllers should be stopped
+
+    protected void registerController(Controller c, ServletContextEvent evt){
+
+        if(c instanceof CommandProcessor){
+            ((CommandProcessor) c).setMastercontSerialInterface(msi);
+            msi.addCommandListener((CommandProcessor)c);
+        }
+
+        c.startup();
+
+    }
 
 
 }

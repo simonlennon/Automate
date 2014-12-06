@@ -67,7 +67,7 @@ public class ScheduleServlet extends HttpServlet {
             writer.write(data);
             writer.close();
 
-            response.sendRedirect("save_complete.jsp");
+            response.sendRedirect("save_complete.html");
 
         } else {
             throw new ServletException("Could not identify device to save file for:"+device);

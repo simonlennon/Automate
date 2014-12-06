@@ -1,5 +1,6 @@
 package com.simonlennon.automate.heating;
 
+import com.simonlennon.automate.controller.Controller;
 import com.simonlennon.automate.timeline.*;
 import com.simonlennon.automate.timeline.events.EventHelper;
 import com.simonlennon.automate.timeline.events.EventTask;
@@ -15,7 +16,7 @@ import java.util.Timer;
 /**
  * Created by simon.lennon on 20/01/14.
  */
-public class BoilerController implements TimelineEventHandler {
+public class BoilerController implements Controller, TimelineEventHandler {
 
     protected Timeline radsTimeline;
     protected Timeline tankTimeline;

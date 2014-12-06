@@ -10,7 +10,7 @@ import java.util.StringTokenizer;
 /**
  * Created by simon.lennon on 29/09/2014.
  */
-public class GenericController implements CommandProcessor, Controller {
+public class GenericController implements Controller, CommandProcessor {
 
     protected ArrayList<Command> outboundHistory = new ArrayList<Command>();
     protected ArrayList<Command> inboundHistory = new ArrayList<Command>();
@@ -44,6 +44,11 @@ public class GenericController implements CommandProcessor, Controller {
 
     @Override
     public void startup() {
+
+    }
+
+    @Override
+    public void shutdown() {
 
     }
 

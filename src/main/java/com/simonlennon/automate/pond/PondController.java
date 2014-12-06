@@ -1,6 +1,7 @@
 package com.simonlennon.automate.pond;
 
 import com.simonlennon.automate.PersistedProperties;
+import com.simonlennon.automate.controller.Controller;
 import com.simonlennon.automate.serialcomms.*;
 import com.simonlennon.automate.timeline.Activation;
 import com.simonlennon.automate.timeline.ActivationHelper;
@@ -21,7 +22,7 @@ import java.util.Timer;
 /**
  * Created by simon.lennon on 11/05/14.
  */
-public class PondController implements CommandProcessor, TimelineEventHandler {
+public class PondController implements Controller, CommandProcessor, TimelineEventHandler {
 
     protected int transCounter = 0;
 
