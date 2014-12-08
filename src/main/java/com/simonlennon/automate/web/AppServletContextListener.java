@@ -66,7 +66,7 @@ public class AppServletContextListener implements ServletContextListener {
         try {
             msi.init(PersistedProperties.getInstance().getProp("serial.port"));
         } catch (SerialPortException e) {
-            logger.error("Error shutting down serial interface", e);
+            logger.error("Error starting serial interface", e);
         }
 
 
