@@ -45,7 +45,7 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
     protected boolean started;
 
     protected Command pumpOnCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, transCounter, POND_ON_CMD);
-    protected Command pumpOffCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, transCounter, POND_ON_CMD);
+    protected Command pumpOffCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, transCounter, POND_OFF_CMD);
 
     public void startup() {
         init();
@@ -80,7 +80,7 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
 
     @Override
     public void timelineExpired(ExpiryEvent event) {
-        logger.debug("timelineExpired(): Timeline has expired so reinitialising .");
+        logger.debug("timelineExpired(): Timeline has expired so reinitialising.");
         init();
     }
 
