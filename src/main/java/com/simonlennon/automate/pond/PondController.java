@@ -74,7 +74,7 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
         }
 
         driverTimer = new Timer();
-        driverTimer.scheduleAtFixedRate(new DriverTask(), 60000, 60000);
+        driverTimer.scheduleAtFixedRate(new DriverTask(), 1000, 60000);
 
     }
 
