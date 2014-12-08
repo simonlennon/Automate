@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by simon.lennon on 11/05/14.
@@ -28,8 +29,6 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
 
     public static final int POND_ON_CMD = 1;
     public static final int POND_OFF_CMD = 2;
-    public static final int LIGHT_ON_CMD = 3;
-    public static final int LIGHTS_OFF_CMD = 4;
     public static final int GET_STATUS_CMD = 5;
     public static final int POND_REFRESH_REQUEST = 6;
 
@@ -68,8 +67,8 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
                 logger.info("init(): Pond controller must be in manual mode");
             }
 
-        } 
-        
+        }
+
     }
 
     @Override
@@ -108,8 +107,11 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
 
         eventTimer = new Timer();
         EventHelper.scheduleEvents(pondTimeline, eventTimer, this);
+        int oneMin = 60000;
+        eventTimer.scheduleAtFixedRate(new DriverTask(), oneMin, oneMin);
 
     }
+
 
     protected int getNextTransID() {
 
@@ -121,11 +123,36 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
 
     }
 
+    class DriverTask extends TimerTask {
+        public void run() {
+            synchronized (PondController.this) {
+                if (pumpOn) {
+                    try {
+                        msi.writeCmd(pumpOnCmd);
+                    } catch (SerialPortException e) {
+                        logger.debug("run() serial error", e);
+                        logger.error("Serial error driving pond pump on. Turn on debug for stack trace.");
+                    }
+                } else {
+                    try {
+                        msi.writeCmd(pumpOffCmd);
+                        pumpOn = false;
+                    } catch (SerialPortException e) {
+                        logger.debug("run() serial error", e);
+                        logger.error("Serial error driving pond pump off. Turn on debug for stack trace.");
+                    }
+                }
+            }
+        }
+    }
+
+    protected Command pumpOnCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), POND_ON_CMD);
+    protected Command pumpOffCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), POND_ON_CMD);
+
     public void turnOnPump() {
 
         try {
-            Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), POND_ON_CMD);
-            msi.writeCmd(c);
+            msi.writeCmd(pumpOnCmd);
             pumpOn = true;
         } catch (SerialPortException e) {
             logger.debug("turnOnPump() serial error", e);
@@ -136,43 +163,11 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
 
     public void turnOffPump() {
         try {
-            Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), POND_OFF_CMD);
-            msi.writeCmd(c);
+            msi.writeCmd(pumpOffCmd);
             pumpOn = false;
         } catch (SerialPortException e) {
             logger.debug("turnOffPond() serial error", e);
             logger.error("Serial error turning off pond pump. Turn on debug for stack trace.");
-        }
-    }
-
-    public void turnOnLights() {
-        try {
-            Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), LIGHT_ON_CMD);
-            msi.writeCmd(c);
-        } catch (SerialPortException e) {
-            logger.debug("turnOnLights() serial error", e);
-            logger.error("Serial error turning on lights. Turn on debug for stack trace.");
-        }
-    }
-
-    public void turnOffLights() {
-        try {
-            Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), LIGHTS_OFF_CMD);
-            msi.writeCmd(c);
-        } catch (SerialPortException e) {
-
-            logger.debug("turnOffLights() serial error", e);
-            logger.error("Serial error turning off lights. Turn on debug for stack trace.");
-        }
-    }
-
-    public void requestStatus() {
-        try {
-            Command c = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, getNextTransID(), GET_STATUS_CMD);
-            msi.writeCmd(c);
-        } catch (SerialPortException e) {
-            logger.debug("requestStatus() serial error", e);
-            logger.error("Serial error requesting status. Turn on debug for stack trace.");
         }
     }
 
@@ -231,8 +226,8 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
         PersistedProperties props = PersistedProperties.getInstance();
         props.saveProp(MODE_PROP_KEY, MANUAL_MODE);
         mode = MANUAL_MODE;
-        if(pumpOn){
-        	turnOffPump();
+        if (pumpOn) {
+            turnOffPump();
         }
         restart();
     }
