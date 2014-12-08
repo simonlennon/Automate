@@ -5,15 +5,26 @@
     <Console name="Console" target="SYSTEM_OUT">
         <PatternLayout pattern="[%d{ISO8601}] [%t] %-5p %c{6} - %msg%n"/>
     </Console>
-    <File name="File" fileName="automate.log">
-        <PatternLayout pattern="[%d{ISO8601}] [%t] %-5p %c{6} - %msg%n"/>
-    </File>
+
+    <RollingFile name="Roller" fileName="logs/automate.log" filePattern="logs/automate-%d{yyyy-MM-dd}.log">
+        <PatternLayout>
+            <pattern>[%d{ISO8601}] [%t] %-5p %c{6} - %msg%n</pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        </Policies>
+    </RollingFile>
+
+
+
 </appenders>
+
+
 
 <loggers>
     <logger name="com.simonlennon" level="trace" additivity="false">
         <appender-ref ref="Console"/>
-        <appender-ref ref="File"/>
+        <appender-ref ref="Roller"/>
     </logger>
     <root level="info">
         <appender-ref ref="Console"/>
