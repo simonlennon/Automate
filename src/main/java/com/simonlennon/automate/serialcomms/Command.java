@@ -26,7 +26,9 @@ public class Command {
     public int getTransactionID() {
         return transactionID;
     }
-
+    public void setTransactionID(int transactionID){
+        this.transactionID = transactionID;
+    }
     public int getCommand() {
         return command;
     }
