@@ -23,10 +23,11 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 	protected SerialPort serialPort;
 	protected String portName;
 	protected String inboundCmd = "";
+	protected Vector<CommandProcessor> commandProcessors = new Vector<CommandProcessor>();
 
-	public void init(String portName) throws SerialPortException {
+    public void init(String portName) throws SerialPortException {
 
-		this.portName = portName;
+        this.portName = portName;
         serialPort = new SerialPort(portName);
         serialPort.openPort();
         serialPort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8,
@@ -35,37 +36,37 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
 	}
 
-	public void writeCmd(Command cmd) throws SerialPortException {
+    public void writeCmd(Command cmd) throws SerialPortException {
 
-		logger.debug("writeCmd()" + cmd.toString());
+        logger.debug("writeCmd()" + cmd.toString());
 
-		if (serialPort == null) {
-			init(portName);
-		}
+        if (serialPort == null) {
+            init(portName);
+        }
 
-		serialPort.writeBytes(cmd.toString().getBytes());// Write data to port
+        serialPort.writeBytes(cmd.toString().getBytes());// Write data to port
 
 	}
 
 	public void stop() throws SerialPortException {
-		if (serialPort != null) {
-			serialPort.closePort();// Close serial port
-			serialPort = null;
-		}
+        if (serialPort != null) {
+            serialPort.closePort();// Close serial port
+            serialPort = null;
+        }
 	}
 
 	public void serialEvent(SerialPortEvent event) {
 
-		if (event.isRXCHAR()) {// If data is available
-			try {
+        if (event.isRXCHAR()) {// If data is available
+            try {
 
-				for (int i = 0; i < event.getEventValue(); i++) {
+                for (int i = 0; i < event.getEventValue(); i++) {
 
-					String b = serialPort.readString(1);
+                    String b = serialPort.readString(1);
 
-					if (b != null) {
+                    if (b != null) {
 
-						if (";".equals(b)) {
+                        if (";".equals(b)) {
 
                             try {
                                 if (inboundCmd.trim().length() != 0) {
@@ -75,105 +76,103 @@ public class MastercontSerialInterface implements SerialPortEventListener {
                                 inboundCmd = "";
                             }
 
-						} else {
-							inboundCmd += b;
-						}
-					}
+                        } else {
+                            inboundCmd += b;
+                        }
+                    }
 
-				}
+                }
 
-			} catch (SerialPortException ex) {
-				System.out.println(ex);
-			}
+            } catch (SerialPortException ex) {
+                System.out.println(ex);
+            }
 
-		} else if (event.isCTS()) {// If CTS line has changed state
-			if (event.getEventValue() == 1) {// If line is ON
-				logger.debug("serialEvent() CTS - ON");
-			} else {
-				logger.debug("serialEvent() CTS - OFF");
-			}
-		} else if (event.isDSR()) {// /If DSR line has changed state
-			if (event.getEventValue() == 1) {// If line is ON
-				logger.debug("serialEvent() DSR - ON");
-			} else {
-				logger.debug("serialEvent() DSR - OFF");
-			}
+        } else if (event.isCTS()) {// If CTS line has changed state
+            if (event.getEventValue() == 1) {// If line is ON
+                logger.debug("serialEvent() CTS - ON");
+            } else {
+                logger.debug("serialEvent() CTS - OFF");
+            }
+        } else if (event.isDSR()) {// /If DSR line has changed state
+            if (event.getEventValue() == 1) {// If line is ON
+                logger.debug("serialEvent() DSR - ON");
+            } else {
+                logger.debug("serialEvent() DSR - OFF");
+            }
 		}
 
 	}
 
 	public void handleCommand(String cmd) {
 
-		if (cmd.startsWith("DEBUG:")) {
-			logger.debug("DEBUG Message from micro processor: " + cmd);
-		} else if (cmd.startsWith("INFO:")) {
-			logger.debug("INFO Message from micro processor: " + cmd);
-		} else if (cmd.startsWith("WARN:")) {
-			logger.debug("WARN Message from micro processor: " + cmd);
-		} else if (cmd.startsWith("ERROR:")) {
-			logger.debug("ERROR Message from micro processor: " + cmd);
-		} else {
-            logger.debug("handleCommand:"+cmd);
-			try {
-				fireCommand(cmd);
-			} catch (InvalidCommandException e) {
-				logger.warn("Could not read inbound command " + e.getMessage());
-			}
+        if (cmd.startsWith("DEBUG:")) {
+            logger.debug("DEBUG Message from micro processor: " + cmd);
+        } else if (cmd.startsWith("INFO:")) {
+            logger.info("INFO Message from micro processor: " + cmd);
+        } else if (cmd.startsWith("WARN:")) {
+            logger.warn("WARN Message from micro processor: " + cmd);
+        } else if (cmd.startsWith("ERROR:")) {
+            logger.debug("ERROR Message from micro processor: " + cmd);
+        } else {
+            logger.debug("handleCommand:" + cmd);
+            try {
+                fireCommand(cmd);
+            } catch (InvalidCommandException e) {
+                logger.warn("Could not read inbound command " + e.getMessage());
+            }
 		}
 
 	}
 
-	protected void fireCommand(String cmd) throws InvalidCommandException {
-		StringTokenizer st = new StringTokenizer(cmd, ":");
-		int tokenCount = st.countTokens();
+    protected void fireCommand(String cmd) throws InvalidCommandException {
+        StringTokenizer st = new StringTokenizer(cmd, ":");
+        int tokenCount = st.countTokens();
 
-		if (tokenCount < 5) {
-			throw new InvalidCommandException("Malformed command received: "
-					+ cmd);
-		}
+        if (tokenCount < 5) {
+            throw new InvalidCommandException("Malformed command received: "
+                    + cmd);
+        }
 
-		Command c;
+        Command c;
 
-		try {
-			// The to address
-			Device to = Device.findByAddress(Integer.parseInt(st.nextToken()
-					.toString()));
-			// The from address
-			Device from = Device.findByAddress(Integer.parseInt(st.nextToken()
-					.toString()));
-			// The message type
-			MessageType type = MessageType.findByType(Integer.parseInt(st
-					.nextToken().toString()));
-			// The transaction ID
-			int txid = Integer.parseInt(st.nextToken().toString());
-			// The command
-			int command = Integer.parseInt(st.nextToken().toString());
+        try {
+            // The to address
+            Device to = Device.findByAddress(Integer.parseInt(st.nextToken()
+                    .toString()));
+            // The from address
+            Device from = Device.findByAddress(Integer.parseInt(st.nextToken()
+                    .toString()));
+            // The message type
+            MessageType type = MessageType.findByType(Integer.parseInt(st
+                    .nextToken().toString()));
+            // The transaction ID
+            int txid = Integer.parseInt(st.nextToken().toString());
+            // The command
+            int command = Integer.parseInt(st.nextToken().toString());
 
-			if (to == null || from == null || type == null) {
-				throw new InvalidCommandException(
-						"Malformed command received: " + cmd);
-			}
+            if (to == null || from == null || type == null) {
+                throw new InvalidCommandException(
+                        "Malformed command received: " + cmd);
+            }
 
-			c = new Command(to, from, type, txid, command);
+            c = new Command(to, from, type, txid, command);
 
-		} catch (NumberFormatException ex) {
-			throw new InvalidCommandException(
-					"Malformed command received, could not parse number from string: "
-							+ cmd);
-		}
+        } catch (NumberFormatException ex) {
+            throw new InvalidCommandException(
+                    "Malformed command received, could not parse number from string: "
+                            + cmd);
+        }
 
-		// The rest are params
-		while (st.hasMoreTokens()) {
-			c.addParam(st.nextToken().toString());
-		}
+        // The rest are params
+        while (st.hasMoreTokens()) {
+            c.addParam(st.nextToken().toString());
+        }
 
-		for (CommandProcessor cp : commandProcessors) {
-			cp.handleCommand(c);
-		}
+        for (CommandProcessor cp : commandProcessors) {
+            cp.handleCommand(c);
+        }
 
-	}
-
-	protected Vector<CommandProcessor> commandProcessors = new Vector<CommandProcessor>();
+    }
 
 	public void addCommandListener(CommandProcessor cp) {
 		commandProcessors.add(cp);

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,8 +12,8 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -152,56 +152,61 @@
 
     }
 
+
     </script>
 
-  </head>
-  <body bgcolor="#E6E6FA">
+</head>
+<body bgcolor="#E6E6FA">
 
-    <ul class="nav nav-pills">
-      <li><a href="index.html">Home</a></li>
-      <li class="active"><a href="#">Heating</a></li>
-      <li><a href="pond.html">Pond</a></li>
-      <li><a href="generic_message.html">Generic</a></li>
-    </ul>
+<ul class="nav nav-pills">
+    <li><a href="index.html">Home</a></li>
+    <li class="active"><a href="#">Heating</a></li>
+    <li><a href="pond.html">Pond</a></li>
+    <li><a href="env.html">Env</a></li>
+    <li><a href="generic_message.html">Generic</a></li>
+</ul>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
+<div class="panel panel-default">
+    <div class="panel-heading">
         <h3 class="panel-title" data-bind="text: statusMessage"></h3>
-      </div>
-      <div class="panel-body">
+    </div>
+    <div class="panel-body">
         Boiler is <span data-bind="text: boilerStatus">-</span>
-      </div>
-       <div class="panel-body">
+    </div>
+    <div class="panel-body">
         Radiators are <span data-bind="text: radiatorStatus">-</span>
-       </div>
-
-         <div class="panel-body">
-           Tank Boost <span data-bind="text: tankBoostStatus">-</span>
-         </div>
-
-         <div class="panel-body">
-           Radiator Boost <span data-bind="text: radBoostStatus">-</span>
-         </div>
-
-         <div class="panel-body">
-           Permit Boost <span data-bind="text: boostPermitted">-</span>
-         </div>
     </div>
 
-     <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Control</h3>
-      </div>
-      <div class="panel-body">
-          <div class="btn-group">
-            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-time"></span> Auto Schedule</button>
-            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-stop"></span> Off</button>
-          </div>
-       </div>
+    <div class="panel-body">
+        Tank Boost <span data-bind="text: tankBoostStatus">-</span>
+    </div>
 
-       <div class="panel-body">
-         <div class="col-lg-3">
-             <div class="input-group input-group-lg">
+    <div class="panel-body">
+        Radiator Boost <span data-bind="text: radBoostStatus">-</span>
+    </div>
+
+    <div class="panel-body">
+        Permit Boost <span data-bind="text: boostPermitted">-</span>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Control</h3>
+    </div>
+    <div class="panel-body">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-time"></span> Auto
+                Schedule
+            </button>
+            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-stop"></span> Off
+            </button>
+        </div>
+    </div>
+
+    <div class="panel-body">
+        <div class="col-lg-3">
+            <div class="input-group input-group-lg">
                 <select class="form-control" data-bind="value: boostTime">
                     <option value="1">1 Mins</option>
                     <option value="30">30 Mins</option>
@@ -214,12 +219,14 @@
                 <span class="input-group-addon">
                     <input type="checkbox" data-bind="checked: fireRads"> Fire Rads
                 </span>
-           </div>
-            <button type="button" class="btn btn-default btn-lg" onClick="boost()" data-toggle="button" data-bind="visible: boostPermitted">
-              <span class="glyphicon glyphicon-fire"></span> Start Boost
+            </div>
+            <button type="button" class="btn btn-default btn-lg" onClick="boost()" data-toggle="button"
+                    data-bind="visible: boostPermitted">
+                <span class="glyphicon glyphicon-fire"></span> Start Boost
             </button>
-            <button type="button" class="btn btn-default btn-lg" onClick="cancelBoost()" data-toggle="button" data-bind="visible: cancelPermitted">
-              <span class="glyphicon glyphicon-remove"></span> Cancel Boost
+            <button type="button" class="btn btn-default btn-lg" onClick="cancelBoost()" data-toggle="button"
+                    data-bind="visible: cancelPermitted">
+                <span class="glyphicon glyphicon-remove"></span> Cancel Boost
             </button>
 
         </div>
@@ -228,5 +235,5 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
 
-  </body>
+</body>
 </html>

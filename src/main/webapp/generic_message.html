@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,8 +13,8 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -145,49 +145,56 @@
     }
 
 
+
     </script>
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <ul class="nav nav-pills">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="heating.html">Heating</a></li>
-      <li><a href="pond.html">Pond</a></li>
-      <li class="active"><a href="#">Generic</a></li>
-    </ul>
+<ul class="nav nav-pills">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="heating.html">Heating</a></li>
+    <li><a href="pond.html">Pond</a></li>
+    <li><a href="env.html">Env</a></li>
+    <li class="active"><a href="#">Generic</a></li>
+</ul>
 
-    <div class="panel panel-default">
-          <div class="panel-heading">
-             <h3 class="panel-title" data-bind="text: statusMessage"></h3>
-          </div>
-          <div class="panel-body">
-            <div class="col-lg-6">
-                <div class="input-group">
-                  <input type="text" class="form-control" data-bind="value: command">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title" data-bind="text: statusMessage"></h3>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control" data-bind="value: command">
                   <span class="input-group-btn">
                     <button class="btn btn-default" type="button" onClick="issueGenericCommand()">Send</button>
                   </span>
-                </div>
-            <div class="alert alert-info" role="alert" data-bind="text: outboundHistory">...</div>
-            <button class="btn btn-default" type="button" onClick="issueServerCommand('genericClearOutboundHistory')">Clear History</button>
             </div>
-          </div>
+            <div class="alert alert-info" role="alert" data-bind="text: outboundHistory">...</div>
+            <button class="btn btn-default" type="button" onClick="issueServerCommand('genericClearOutboundHistory')">
+                Clear History
+            </button>
+        </div>
     </div>
+</div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
+<div class="panel panel-default">
+    <div class="panel-heading">
         <h3 class="panel-title">Inbound Commands</h3>
-      </div>
-      <div class="panel-body">
-       <div class="col-lg-6">
-         <div class="alert alert-info" role="alert" data-bind="text: inboundHistory">...</div>
-         <button class="btn btn-default" type="button" onClick="issueServerCommand('genericClearInboundHistory')">Clear History</button>
-      </div></div>
     </div>
+    <div class="panel-body">
+        <div class="col-lg-6">
+            <div class="alert alert-info" role="alert" data-bind="text: inboundHistory">...</div>
+            <button class="btn btn-default" type="button" onClick="issueServerCommand('genericClearInboundHistory')">
+                Clear History
+            </button>
+        </div>
+    </div>
+</div>
 
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
 
-  </body>
+</body>
 </html>
