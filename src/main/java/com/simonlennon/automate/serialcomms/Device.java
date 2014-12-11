@@ -5,7 +5,7 @@ package com.simonlennon.automate.serialcomms;
  */
 public enum Device {
 
-    MASTERCONT(0), PONDCONT(1), TESTDEVICE(2);
+    MASTERCONT(0), PONDCONT(1), TESTDEVICE(2), ENV20(20), ENV21(21), ENV22(22), ENV23(23);
 
     private int address;
 
@@ -24,5 +24,9 @@ public enum Device {
             }
         }
         return null;
+    }
+
+    public int getAddress() {
+        return address;
     }
 }

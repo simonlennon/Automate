@@ -5,7 +5,7 @@ package com.simonlennon.automate.serialcomms;
  */
 public interface CommandProcessor {
 
-    void setMastercontSerialInterface(MastercontSerialInterface mcsi);
+    void setMastercontSerialInterface(MastercontSerialInterface msi);
 
     void handleCommand(Command cmd);
 
