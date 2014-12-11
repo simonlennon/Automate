@@ -1,12 +1,11 @@
 package com.simonlennon.automate.web;
 
+import com.simonlennon.automate.PersistedProperties;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.simonlennon.automate.PersistedProperties;
-
 import java.io.*;
 
 /**
@@ -19,7 +18,7 @@ public class ScheduleServlet extends HttpServlet {
 
         String device = request.getParameter("device");
 
-        if("pond".equals(device)){
+        if ("pond".equals(device)) {
 
             response.setContentType("text/xml");
             response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -27,13 +26,13 @@ public class ScheduleServlet extends HttpServlet {
             response.setDateHeader("Expires", 0);
 
             String scheduleFile = PersistedProperties.getInstance().getProp("pond.schedule.path");
-            
+
             File f = new File(scheduleFile);
             BufferedReader reader = new BufferedReader(new FileReader(f));
             BufferedWriter writer = new BufferedWriter(response.getWriter());
 
             String line = null;
-            while((line=reader.readLine())!=null){
+            while ((line = reader.readLine()) != null) {
                 writer.write(line);
             }
 
@@ -42,7 +41,7 @@ public class ScheduleServlet extends HttpServlet {
             reader.close();
 
         } else {
-            throw new ServletException("Could not identify device to get file for:"+device);
+            throw new ServletException("Could not identify device to get file for:" + device);
         }
 
     }
@@ -58,10 +57,9 @@ public class ScheduleServlet extends HttpServlet {
         }
 
 
+        if ("pond".equals(device)) {
 
-        if("pond".equals(device)){
-        	
-        	String scheduleFile = PersistedProperties.getInstance().getProp("pond.schedule.path");
+            String scheduleFile = PersistedProperties.getInstance().getProp("pond.schedule.path");
             File f = new File(scheduleFile);
             FileWriter writer = new FileWriter(f);
             writer.write(data);
@@ -70,7 +68,7 @@ public class ScheduleServlet extends HttpServlet {
             response.sendRedirect("save_complete.html");
 
         } else {
-            throw new ServletException("Could not identify device to save file for:"+device);
+            throw new ServletException("Could not identify device to save file for:" + device);
         }
     }
 

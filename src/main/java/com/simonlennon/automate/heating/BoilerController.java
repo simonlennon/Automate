@@ -18,20 +18,15 @@ import java.util.Timer;
  */
 public class BoilerController implements Controller, TimelineEventHandler {
 
+    private static Logger logger = LogManager.getLogger(Boiler.class);
     protected Timeline radsTimeline;
     protected Timeline tankTimeline;
-
     protected Timer eventTimer;
-
     protected Boiler boiler;
     protected Rads rads;
-
     protected boolean started;
-
     protected BoostActivation radBoost;
     protected BoostActivation tankBoost;
-
-    private static Logger logger = LogManager.getLogger(Boiler.class);
 
     public BoilerController() {
         boiler = new Boiler();
@@ -52,12 +47,6 @@ public class BoilerController implements Controller, TimelineEventHandler {
         }
 
         checkAndSetDeviceStates();
-    }
-
-    public class BoostAlreadyActiveException extends Exception {
-        BoostAlreadyActiveException(String msg) {
-            super(msg);
-        }
     }
 
     public void boost(int minutes, boolean fireRads)
@@ -205,8 +194,6 @@ public class BoilerController implements Controller, TimelineEventHandler {
 
     }
 
-
-
     public boolean isBoostingRads() {
         return radBoost != null;
     }
@@ -227,7 +214,6 @@ public class BoilerController implements Controller, TimelineEventHandler {
         EventHelper.scheduleEvents(tankTimeline, eventTimer, this);
 
     }
-
 
     public void shutdown() {
 
@@ -250,6 +236,12 @@ public class BoilerController implements Controller, TimelineEventHandler {
 
     public Rads getRads() {
         return rads;
+    }
+
+    public class BoostAlreadyActiveException extends Exception {
+        BoostAlreadyActiveException(String msg) {
+            super(msg);
+        }
     }
 
 }

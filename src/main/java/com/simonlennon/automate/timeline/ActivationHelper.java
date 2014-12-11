@@ -9,7 +9,7 @@ import java.util.Date;
 public class ActivationHelper {
 
     public static ArrayList<Activation> findActivation(Activation[] activations,
-                                                   Date time) {
+                                                       Date time) {
 
         ArrayList<Activation> activationsForTime = new ArrayList<Activation>();
 

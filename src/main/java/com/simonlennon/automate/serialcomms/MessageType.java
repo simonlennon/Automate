@@ -13,10 +13,6 @@ public enum MessageType {
         this.type = type;
     }
 
-    public String toString() {
-        return "" + type;
-    }
-
     public static MessageType findByType(int type) {
         for (MessageType t : MessageType.values()) {
             if (t.type == type) {
@@ -24,6 +20,10 @@ public enum MessageType {
             }
         }
         return null;
+    }
+
+    public String toString() {
+        return "" + type;
     }
 
 }

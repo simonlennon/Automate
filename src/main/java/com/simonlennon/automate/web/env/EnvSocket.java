@@ -17,14 +17,12 @@ import java.util.Map;
 public class EnvSocket implements UserDataListiner {
 
     static EnvController envController;
-
+    private static Logger logger = LogManager
+            .getLogger(EnvSocket.class);
     protected Session session;
     protected ObjectMapper mapper = new ObjectMapper();
 
-    private static Logger logger = LogManager
-            .getLogger(EnvSocket.class);
-
-    public EnvSocket(){
+    public EnvSocket() {
 
     }
 
@@ -68,7 +66,7 @@ public class EnvSocket implements UserDataListiner {
     @Override
     public void handleUserDataEvent(int evtType, Object params) {
 
-        logger.debug("handleUserDataEvent()"+params);
+        logger.debug("handleUserDataEvent()" + params);
         try {
             String jason = mapper.writeValueAsString(params);
             session.getRemote().sendString(jason);

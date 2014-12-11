@@ -25,27 +25,24 @@ import java.util.TimerTask;
  */
 public class PondController implements Controller, CommandProcessor, TimelineEventHandler {
 
-    protected int transCounter = 0;
-
     public static final int POND_ON_CMD = 1;
     public static final int POND_OFF_CMD = 2;
     public static final int GET_STATUS_CMD = 5;
     public static final int POND_REFRESH_REQUEST = 6;
-
-    public MastercontSerialInterface msi;
-
-    protected boolean pumpOn;
-
+    public static final String MODE_PROP_KEY = "POND_MODE";
+    public static final String AUTO_MODE = "auto";
+    public static final String MANUAL_MODE = "manual";
+    protected String mode = MANUAL_MODE;
     private static Logger logger = LogManager.getLogger(PondController.class);
-
+    public MastercontSerialInterface msi;
+    protected int transCounter = 0;
+    protected Command pumpOnCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, transCounter, POND_ON_CMD);
+    protected Command pumpOffCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, transCounter, POND_OFF_CMD);
+    protected boolean pumpOn;
     protected Timeline pondTimeline;
     protected Timer eventTimer;
     protected Timer driverTimer;
-
     protected boolean started;
-
-    protected Command pumpOnCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, transCounter, POND_ON_CMD);
-    protected Command pumpOffCmd = new Command(Device.PONDCONT, Device.MASTERCONT, MessageType.DATA, transCounter, POND_OFF_CMD);
 
     public void startup() {
         init();
@@ -121,7 +118,6 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
 
     }
 
-
     protected int getNextTransID() {
 
         if (transCounter == 999) {
@@ -131,34 +127,6 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
         return ++transCounter;
 
     }
-
-    class DriverTask extends TimerTask {
-        public void run() {
-            synchronized (PondController.this) {
-                if (pumpOn) {
-                    try {
-                        logger.debug("Driving pump on");
-                        pumpOnCmd.setTransactionID(getNextTransID());
-                        msi.writeCmd(pumpOnCmd);
-                    } catch (SerialPortException e) {
-                        logger.debug("run() serial error", e);
-                        logger.error("Serial error driving pond pump on. Turn on debug for stack trace.");
-                    }
-                } else {
-                    try {
-                        logger.debug("Driving pump off");
-                        pumpOffCmd.setTransactionID(getNextTransID());
-                        msi.writeCmd(pumpOffCmd);
-                    } catch (SerialPortException e) {
-                        logger.debug("run() serial error", e);
-                        logger.error("Serial error driving pond pump off. Turn on debug for stack trace.");
-                    }
-                }
-            }
-        }
-    }
-
-
 
     public void turnOnPump() {
 
@@ -228,11 +196,6 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
         startup();
     }
 
-    public static final String MODE_PROP_KEY = "POND_MODE";
-    public static final String AUTO_MODE = "auto";
-    public static final String MANUAL_MODE = "manual";
-    protected String mode = MANUAL_MODE;
-
     public void switchToManual() throws IOException {
         PersistedProperties props = PersistedProperties.getInstance();
         props.saveProp(MODE_PROP_KEY, MANUAL_MODE);
@@ -261,6 +224,32 @@ public class PondController implements Controller, CommandProcessor, TimelineEve
             this.mode = MANUAL_MODE;
         } else {
             this.mode = val;
+        }
+    }
+
+    class DriverTask extends TimerTask {
+        public void run() {
+            synchronized (PondController.this) {
+                if (pumpOn) {
+                    try {
+                        logger.debug("Driving pump on");
+                        pumpOnCmd.setTransactionID(getNextTransID());
+                        msi.writeCmd(pumpOnCmd);
+                    } catch (SerialPortException e) {
+                        logger.debug("run() serial error", e);
+                        logger.error("Serial error driving pond pump on. Turn on debug for stack trace.");
+                    }
+                } else {
+                    try {
+                        logger.debug("Driving pump off");
+                        pumpOffCmd.setTransactionID(getNextTransID());
+                        msi.writeCmd(pumpOffCmd);
+                    } catch (SerialPortException e) {
+                        logger.debug("run() serial error", e);
+                        logger.error("Serial error driving pond pump off. Turn on debug for stack trace.");
+                    }
+                }
+            }
         }
     }
 }

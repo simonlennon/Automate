@@ -84,7 +84,7 @@ public class TimelineStore {
 
             cal.setTime(start);
             if (day == cal.get(Calendar.DAY_OF_WEEK)) {
-            	
+
                 ScheduledActivation sa1 = new ScheduledActivation(adjustToToday(today, start), adjustToToday(today, end));
                 timeline.addActivation(sa1);
             }
@@ -107,7 +107,7 @@ public class TimelineStore {
         t.set(Calendar.DAY_OF_MONTH, s.get(Calendar.DAY_OF_MONTH));
         t.set(Calendar.SECOND, 0);
         t.set(Calendar.MILLISECOND, 0);
-        
+
         return t.getTime();
 
     }

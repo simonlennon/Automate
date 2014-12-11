@@ -14,6 +14,7 @@ public class GenericController implements Controller, CommandProcessor {
 
     protected ArrayList<Command> outboundHistory = new ArrayList<Command>();
     protected ArrayList<Command> inboundHistory = new ArrayList<Command>();
+    protected MastercontSerialInterface mcsi;
 
     public ArrayList<Command> getOutboundHistory() {
         return outboundHistory;
@@ -23,9 +24,6 @@ public class GenericController implements Controller, CommandProcessor {
         return inboundHistory;
     }
 
-
-    protected MastercontSerialInterface mcsi;
-
     @Override
     public void setMastercontSerialInterface(MastercontSerialInterface mcsi) {
         this.mcsi = mcsi;
@@ -34,8 +32,8 @@ public class GenericController implements Controller, CommandProcessor {
     @Override
     public void handleCommand(Command cmd) {
 
-        if(inboundHistory.size()>40){
-           inboundHistory.remove(0);
+        if (inboundHistory.size() > 40) {
+            inboundHistory.remove(0);
         }
 
         inboundHistory.add(cmd);
@@ -52,10 +50,11 @@ public class GenericController implements Controller, CommandProcessor {
 
     }
 
-    public void clearOutboundHistory(){
+    public void clearOutboundHistory() {
         outboundHistory = new ArrayList<Command>();
     }
-    public void clearInboundHistory(){
+
+    public void clearInboundHistory() {
         inboundHistory = new ArrayList<Command>();
     }
 
@@ -103,13 +102,13 @@ public class GenericController implements Controller, CommandProcessor {
             c.addParam(st.nextToken().toString());
         }
 
-       if(outboundHistory.size()>9){
-           outboundHistory.remove(0);
-       }
+        if (outboundHistory.size() > 9) {
+            outboundHistory.remove(0);
+        }
 
-       outboundHistory.add(c);
+        outboundHistory.add(c);
 
-       mcsi.writeCmd(c);
+        mcsi.writeCmd(c);
 
     }
 

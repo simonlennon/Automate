@@ -36,7 +36,4 @@ public class EventTask extends TimerTask {
     }
 
 
-
-
-
 }

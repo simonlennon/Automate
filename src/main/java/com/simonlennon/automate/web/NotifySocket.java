@@ -1,12 +1,9 @@
 package com.simonlennon.automate.web;
 
-import java.io.IOException;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.annotations.*;
+
+import java.io.IOException;
 
 @WebSocket
 public class NotifySocket {
@@ -40,7 +37,7 @@ public class NotifySocket {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(NotifySocket.this.session != null){
+                while (NotifySocket.this.session != null) {
                     try {
                         NotifySocket.this.session.getRemote().sendString("Still there?");
                     } catch (IOException e) {
@@ -58,7 +55,6 @@ public class NotifySocket {
         t.start();
 
     }
-
 
 
     @OnWebSocketMessage

@@ -9,21 +9,21 @@ public enum Device {
 
     private int address;
 
-    Device(int address){
+    Device(int address) {
         this.address = address;
     }
 
-    public String toString(){
-        return ""+address;
-    }
-
-    public static Device findByAddress(int address){
-        for(Device d:Device.values()){
-            if(d.address==address){
+    public static Device findByAddress(int address) {
+        for (Device d : Device.values()) {
+            if (d.address == address) {
                 return d;
             }
         }
         return null;
+    }
+
+    public String toString() {
+        return "" + address;
     }
 
     public int getAddress() {

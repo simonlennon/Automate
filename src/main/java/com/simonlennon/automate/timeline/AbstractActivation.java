@@ -1,8 +1,6 @@
 package com.simonlennon.automate.timeline;
 
-import com.simonlennon.automate.timeline.Activation;
-
-        import java.util.Date;
+import java.util.Date;
 
 /**
  * Created by simon.lennon on 23/01/14.

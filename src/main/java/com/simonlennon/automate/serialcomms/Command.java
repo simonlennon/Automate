@@ -7,9 +7,23 @@ import java.util.Vector;
  */
 public class Command {
 
+    public static final String sepChar = ":";
+    public static final String endChar = ";";
     protected Device to;
     protected Device from;
     protected MessageType type;
+    protected int transactionID;
+    protected int command;
+    protected Vector params = new Vector();
+
+    public Command(Device to, Device from, MessageType type, int transactionID, int command) {
+        this.to = to;
+        this.from = from;
+        this.type = type;
+        this.transactionID = transactionID;
+        this.command = command;
+
+    }
 
     public Device getTo() {
         return to;
@@ -26,9 +40,11 @@ public class Command {
     public int getTransactionID() {
         return transactionID;
     }
-    public void setTransactionID(int transactionID){
+
+    public void setTransactionID(int transactionID) {
         this.transactionID = transactionID;
     }
+
     public int getCommand() {
         return command;
     }
@@ -37,37 +53,21 @@ public class Command {
         return params;
     }
 
-    protected int transactionID;
-    protected int command;
-    protected Vector params = new Vector();
-
-    public static final String sepChar = ":";
-    public static final String endChar = ";";
-
-    public Command(Device to, Device from, MessageType type, int transactionID, int command){
-        this.to = to;
-        this.from = from;
-        this.type = type;
-        this.transactionID = transactionID;
-        this.command = command;
-
-    }
-
-    public void addParam(String param){
+    public void addParam(String param) {
         params.add(param);
     }
 
-    public String toString(){
+    public String toString() {
 
-        String s = to+sepChar+from+sepChar+type+sepChar+transactionID+sepChar+command;
+        String s = to + sepChar + from + sepChar + type + sepChar + transactionID + sepChar + command;
 
-        if(!params.isEmpty()){
-            for(Object o: params){
-                s+=sepChar+o;
+        if (!params.isEmpty()) {
+            for (Object o : params) {
+                s += sepChar + o;
             }
         }
 
-        s+=endChar;
+        s += endChar;
         return s;
 
     }

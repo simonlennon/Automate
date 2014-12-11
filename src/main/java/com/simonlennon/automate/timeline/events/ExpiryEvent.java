@@ -9,7 +9,7 @@ public class ExpiryEvent extends TimerTask {
 
     protected TimelineEventHandler handler;
 
-    public ExpiryEvent(TimelineEventHandler handler){
+    public ExpiryEvent(TimelineEventHandler handler) {
 
         this.handler = handler;
 

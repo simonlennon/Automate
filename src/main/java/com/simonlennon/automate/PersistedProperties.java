@@ -14,15 +14,11 @@ import java.util.Properties;
  */
 public class PersistedProperties {
 
+    private static final String FILE_NAME = "automate.properties";
     private static Logger logger = LogManager
             .getLogger(PersistedProperties.class);
-
     private static String PROP_DIR_KEY = "automate.props.dir";
-
     private static PersistedProperties pp;
-
-    private static final String FILE_NAME = "automate.properties";
-
     private Properties props = new Properties();
 
     private PersistedProperties() {
@@ -33,7 +29,7 @@ public class PersistedProperties {
         try {
             return getInstanceInternal();
         } catch (IOException e) {
-           throw new RuntimeException("Error loading properties",e);
+            throw new RuntimeException("Error loading properties", e);
         }
 
     }
@@ -51,7 +47,7 @@ public class PersistedProperties {
                 f = new File(FILE_NAME);
             }
 
-            logger.debug("Loading props from: "+f.getPath());
+            logger.debug("Loading props from: " + f.getPath());
 
             if (!f.exists()) {
                 f.createNewFile();
@@ -64,14 +60,14 @@ public class PersistedProperties {
     }
 
     public synchronized void saveProp(String key, String value) {
-    	String propDir = System.getProperty(PROP_DIR_KEY);
+        String propDir = System.getProperty(PROP_DIR_KEY);
         File f = new File(propDir, FILE_NAME);
         props.put(key, value);
         try {
             props.store(new FileOutputStream(f), "Last write: key=" + key + " value=" + value);
         } catch (IOException e) {
-        	logger.debug("Error saving properties",e);
-            throw new RuntimeException("Error saving prop",e);
+            logger.debug("Error saving properties", e);
+            throw new RuntimeException("Error saving prop", e);
         }
     }
 

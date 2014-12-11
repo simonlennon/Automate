@@ -1,8 +1,5 @@
 package com.simonlennon.automate.web.generic;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-
 import com.simonlennon.automate.generic.GenericController;
 import com.simonlennon.automate.web.AppServletContextListener;
 import org.eclipse.jetty.websocket.api.Session;
@@ -13,6 +10,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 /**
@@ -20,7 +19,7 @@ import java.io.IOException;
  */
 
 @SuppressWarnings("serial")
-@WebServlet(name = "GenericCommandWebSocketServlet", urlPatterns = { "/generic" })
+@WebServlet(name = "GenericCommandWebSocketServlet", urlPatterns = {"/generic"})
 public class GenericCommandWebSocketServlet extends WebSocketServlet {
 
     protected GenericController gc;
@@ -39,11 +38,11 @@ public class GenericCommandWebSocketServlet extends WebSocketServlet {
     }
 
 
-    class GenericCommandSocket{
+    class GenericCommandSocket {
 
         protected Session session;
 
-        GenericCommandSocket(){
+        GenericCommandSocket() {
 
         }
 
@@ -75,7 +74,7 @@ public class GenericCommandWebSocketServlet extends WebSocketServlet {
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while(GenericCommandSocket.this.session != null){
+                    while (GenericCommandSocket.this.session != null) {
                         try {
                             GenericCommandSocket.this.session.getRemote().sendString("Still there?");
                         } catch (IOException e) {
@@ -95,14 +94,12 @@ public class GenericCommandWebSocketServlet extends WebSocketServlet {
         }
 
 
-
         @OnWebSocketMessage
         public void onMessage(String message) {
             System.out.println("Message: " + message);
         }
 
     }
-
 
 
 }

@@ -147,6 +147,9 @@ public class StatusServlet extends HttpServlet {
 
     class PondStatus {
 
+        String pumpStatus;
+        String mode;
+
         PondStatus(String pumpStatus, String mode) {
             this.pumpStatus = pumpStatus;
             this.mode = mode;
@@ -160,8 +163,6 @@ public class StatusServlet extends HttpServlet {
             this.pumpStatus = pumpStatus;
         }
 
-        String pumpStatus;
-
         public String getMode() {
             return mode;
         }
@@ -169,8 +170,6 @@ public class StatusServlet extends HttpServlet {
         public void setMode(String mode) {
             this.mode = mode;
         }
-
-        String mode;
     }
 
     class Status {

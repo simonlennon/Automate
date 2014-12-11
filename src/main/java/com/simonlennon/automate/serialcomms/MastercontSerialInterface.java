@@ -17,13 +17,13 @@ import java.util.Vector;
  */
 public class MastercontSerialInterface implements SerialPortEventListener {
 
-	private static Logger logger = LogManager
-			.getLogger(MastercontSerialInterface.class);
+    private static Logger logger = LogManager
+            .getLogger(MastercontSerialInterface.class);
 
-	protected SerialPort serialPort;
-	protected String portName;
-	protected String inboundCmd = "";
-	protected Vector<CommandProcessor> commandProcessors = new Vector<CommandProcessor>();
+    protected SerialPort serialPort;
+    protected String portName;
+    protected String inboundCmd = "";
+    protected Vector<CommandProcessor> commandProcessors = new Vector<CommandProcessor>();
 
     public void init(String portName) throws SerialPortException {
 
@@ -34,7 +34,7 @@ public class MastercontSerialInterface implements SerialPortEventListener {
                 SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
         serialPort.addEventListener(this);
 
-	}
+    }
 
     public void writeCmd(Command cmd) throws SerialPortException {
 
@@ -46,16 +46,16 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
         serialPort.writeBytes(cmd.toString().getBytes());// Write data to port
 
-	}
+    }
 
-	public void stop() throws SerialPortException {
+    public void stop() throws SerialPortException {
         if (serialPort != null) {
             serialPort.closePort();// Close serial port
             serialPort = null;
         }
-	}
+    }
 
-	public void serialEvent(SerialPortEvent event) {
+    public void serialEvent(SerialPortEvent event) {
 
         if (event.isRXCHAR()) {// If data is available
             try {
@@ -99,11 +99,11 @@ public class MastercontSerialInterface implements SerialPortEventListener {
             } else {
                 logger.debug("serialEvent() DSR - OFF");
             }
-		}
+        }
 
-	}
+    }
 
-	public void handleCommand(String cmd) {
+    public void handleCommand(String cmd) {
 
         if (cmd.startsWith("DEBUG:")) {
             logger.debug("DEBUG Message from micro processor: " + cmd);
@@ -120,9 +120,9 @@ public class MastercontSerialInterface implements SerialPortEventListener {
             } catch (InvalidCommandException e) {
                 logger.warn("Could not read inbound command " + e.getMessage());
             }
-		}
+        }
 
-	}
+    }
 
     protected void fireCommand(String cmd) throws InvalidCommandException {
         StringTokenizer st = new StringTokenizer(cmd, ":");
@@ -174,8 +174,8 @@ public class MastercontSerialInterface implements SerialPortEventListener {
 
     }
 
-	public void addCommandListener(CommandProcessor cp) {
-		commandProcessors.add(cp);
-	}
+    public void addCommandListener(CommandProcessor cp) {
+        commandProcessors.add(cp);
+    }
 
 }

@@ -1,7 +1,5 @@
 package com.simonlennon.automate.timeline;
 
-import com.simonlennon.automate.timeline.AbstractActivation;
-
 import java.util.Date;
 
 /**
@@ -9,7 +7,7 @@ import java.util.Date;
  */
 public class ScheduledActivation extends AbstractActivation {
 
-    public ScheduledActivation (Date startTime, Date endTime){
+    public ScheduledActivation(Date startTime, Date endTime) {
         super.startTime = startTime;
         super.endTime = endTime;
     }

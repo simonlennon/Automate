@@ -17,13 +17,6 @@ import java.util.ArrayList;
  */
 public class ReadXMLSchedule {
 
-    public class EventInfo {
-
-        public String startDate;
-        public String endDate;
-
-    }
-
     public ArrayList<EventInfo> getEvents(File file) throws ParserConfigurationException, IOException, SAXException {
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -52,6 +45,13 @@ public class ReadXMLSchedule {
         }
 
         return list;
+
+    }
+
+    public class EventInfo {
+
+        public String startDate;
+        public String endDate;
 
     }
 
