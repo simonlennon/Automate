@@ -6,7 +6,8 @@ import com.simonlennon.automate.environment.EnvController;
 import com.simonlennon.automate.generic.GenericController;
 import com.simonlennon.automate.heating.BoilerController;
 import com.simonlennon.automate.pond.PondController;
-import com.simonlennon.automate.serialcomms.*;
+import com.simonlennon.automate.serialcomms.CommandProcessor;
+import com.simonlennon.automate.serialcomms.MastercontSerialInterface;
 import jssc.SerialPortException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,18 +21,13 @@ import javax.servlet.ServletContextListener;
 public class AppServletContextListener implements ServletContextListener {
 
     public static final String CONTROLLERS_KEY = "CONTROLLERS";
-
-
+    private static Logger logger = LogManager
+            .getLogger(MastercontSerialInterface.class);
     protected BoilerController bc;
     protected PondController pc;
     protected GenericController gc;
     protected EnvController envController;
-
     protected MastercontSerialInterface msi;
-
-    private static Logger logger = LogManager
-            .getLogger(MastercontSerialInterface.class);
-
 
     @Override
     public void contextDestroyed(ServletContextEvent evt) {
@@ -71,28 +67,6 @@ public class AppServletContextListener implements ServletContextListener {
         registerController(envController, evt);
 
         evt.getServletContext().setAttribute(CONTROLLERS_KEY, this);
-
-        Runnable runner = new Runnable(){
-            public void run(){
-                int txid = 0;
-                while(true){
-                    if(txid>999){
-                        txid=0;
-                    }
-                    try {
-                        Thread.sleep(5000);
-                        msi.handleCommand("0:20:0:"+txid+++":1:50.50-17.5"+txid);
-                        msi.handleCommand("0:21:0:"+txid+++":1:50.50-17.5"+txid);
-                        msi.handleCommand("0:22:0:"+txid+++":1:50.50-17.5"+txid);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        Thread t = new Thread(runner);
-        t.start();
-
 
     }
 
